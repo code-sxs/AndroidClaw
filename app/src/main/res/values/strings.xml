@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- strings.xml -->
+<!-- 应用字符串资源 -->
+<resources>
+    <!-- 应用名称 -->
+    <string name="app_name">AndroidClaw</string>
+
+    <!-- 自动化服务 -->
+    <string name="automation_service_description">
+        AndroidClaw 跨应用自动化服务，允许 AI 助手帮您操作其他应用。
+        
+        此服务可以：
+        • 读取您当前使用的应用的界面内容
+        • 执行点击、输入、滑动等操作
+        • 根据您的指令自动完成任务
+        
+        所有操作都在本地执行，不会上传您的数据。
+        您可以随时在通知栏点击"停止"来终止自动化。
+    </string>
+
+    <!-- 通用 -->
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+    <string name="refresh">刷新</string>
+    <string name="loading">加载中...</string>
+    <string name="error">错误</string>
+    <string name="success">成功</string>
+</resources>

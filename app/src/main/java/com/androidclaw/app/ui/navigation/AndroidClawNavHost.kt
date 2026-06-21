@@ -32,6 +32,7 @@ sealed class Screen(val route: String) {
     }
     object SkillMarket : Screen("skill_market")
     object Settings : Screen("settings")
+    object Automation : Screen("automation")
 }
 
 /**
@@ -110,6 +111,13 @@ fun AndroidClawNavHost(
         // TODO: 设置界面
         composable(Screen.Settings.route) {
             // SettingsScreen()
+        }
+
+        // 自动化界面
+        composable(Screen.Automation.route) {
+            AutomationScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

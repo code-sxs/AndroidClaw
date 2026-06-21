@@ -43,6 +43,22 @@ class ToolRegistry private constructor(private val context: Context) {
 
     init {
         Log.i(TAG, "ToolRegistry initializing...")
+        
+        // 注册内置 Skills
+        registerBuiltinSkills()
+    }
+
+    /**
+     * 注册内置 Skills
+     */
+    private fun registerBuiltinSkills() {
+        // 自动注册已知的内置 Skills
+        val builtinSkills = listOf(
+            com.androidclaw.app.skills.AutomationSkill()
+        )
+        
+        registeredSkills.putAll(builtinSkills.associateBy { it.skillName })
+        Log.i(TAG, "Registered ${builtinSkills.size} builtin skills")
     }
 
     /**

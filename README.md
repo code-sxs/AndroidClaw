@@ -1,242 +1,252 @@
-# AndroidClaw
+# AndroidClaw 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" />
-  <img src="https://img.shields.io/badge/Platform-Android-green.svg" alt="Platform" />
-  <img src="https://img.shields.io/badge/Status-In%20Development-yellow.svg" alt="Status" />
+  <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" />
+  <img src="https://img.shields.io/badge/Platform-Android%2010+-green.svg" alt="Platform: Android 10+" />
+  <img src="https://img.shields.io/badge/Kotlin-2.0+-purple.svg" alt="Language: Kotlin" />
+  <img src="https://img.shields.io/badge/UI-Jetpack%20Compose-blue.svg" alt="UI: Jetpack Compose" />
 </p>
 
-**AndroidClaw** 是 [PhoneClaw](https://github.com/kellyvv/PhoneClaw) (iOS) 的 Android 实现，一个完全离线运行的本地私人 AI Agent。
+<p align="center">
+  <strong>完全离线的本地私人 AI Agent · PhoneClaw 的 Android 实现</strong>
+</p>
 
-## 🌟 核心特性
+---
 
-- **🔒 完全离线**: 所有数据处理都在设备上完成，无需联网
-- **🤖 三引擎推理**: MediaPipe LLM + MLC-LLM + LiteRT (TFLite)，自动选择最优引擎
-- **📦 模块化模型**: 支持应用内下载安装 Gemma 4 E2B / Gemma 4 E4B / MiniCPM-V 4.6
-- **🛠️ Skill 系统**: 类似 PhoneClaw 的基于文件的 Skill 扩展系统
-- **🎨 现代 UI**: Jetpack Compose + Material Design 3 (动态配色)
-- **🔊 多模态**: 支持图片理解 (MiniCPM-V)、语音输入输出
-- **🔌 跨 App 自动化**: App Intents / Shortcuts / Deep Link 集成
+## ✨ 这是什么？
 
-## 🏗️ 架构设计
+**AndroidClaw** 是 [PhoneClaw](https://github.com/kellyvv/PhoneClaw) (iOS) 的 Android 完整复刻版 —— 一个**完全离线运行**的本地私人 AI 助手。
+
+> 🔒 **你的数据永远留在设备上。** 无需联网、无需云服务、无 API Key。
+
+### 🌟 核心特性
+
+| 特性 | 说明 |
+|------|------|
+| 🔒 **完全离线** | 所有 AI 推理在本地完成，零网络依赖 |
+| 🤖 **三引擎推理** | MediaPipe LLM / MLC-LLM / LiteRT 自动选择最优引擎 |
+| 📦 **模块化模型** | 应用内下载 Gemma 4 / MiniCPM-V，自动匹配硬件 |
+| 🛠️ **Skill 系统** | 可扩展的工具系统（日历、通讯录、剪贴板…） |
+| 🎨 **现代 UI** | Jetpack Compose + Material Design 3 |
+| 📱 **最低 Android 10** | 覆盖绝大多数 Android 设备 |
+
+---
+
+## 🏗️ 架构
 
 ```
-┌─────────────────────────────────────────┐
-│           Agent 框架层                  │
-│  (Skill 系统 / Tool Registry / 对话管理) │
-└──────────────┬──────────────────────────┘
+┌──────────────────────────────────────┐
+│         UI 层 (Jetpack Compose)       │
+│   聊天 · 模型管理 · Skill 管理        │
+└──────────────┬───────────────────────┘
                │
-┌──────────────┴──────────────────────────┐
-│        模型管理抽象层 (LLMManager)       │
-│  - 硬件检测 (NPU/GPU/CPU)            │
-│  - 引擎自动选择                      │
-│  - 模型下载管理                       │
-└──────┬──────────┬──────────┬─────────┘
-       │          │          │
-┌──────▼───┐  ┌▼──────┐  ┌▼────────┐
-│MediaPipe  │  │ MLC-   │  │ LiteRT  │
-│LLM API    │  │ LLM    │  │ (TFLite)│
-│(首选 GPU) │  │(备用)  │  │(第三选项)│
-└───────────┘  └────────┘  └─────────┘
+┌──────────────▼───────────────────────┐
+│          Agent 框架层                  │
+│   对话管理 · Tool 调用 · Skill 路由    │
+└──────────────┬───────────────────────┘
+               │
+┌──────────────▼───────────────────────┐
+│        LLMManager (统一推理层)         │
+│   硬件检测 · 引擎选择 · 模型管理        │
+└──┬──────────┬──────────┬────────────┘
+   │          │          │
+┌─▼────┐ ┌──▼─────┐ ┌─▼──────────┐
+│MediaPipe│ │MLC-LLM │ │  LiteRT    │
+│ LLM API│ │        │ │ (TFLite)   │
+│ ★首选  │ │☆备用   │ │ ☆第三选项  │
+└────────┘ └────────┘ └────────────┘
 ```
 
-### 推理引擎优先级
+---
 
-1. **MediaPipe LLM Inference API** - 首选，支持 GPU 加速，Google 官方维护
-2. **MLC-LLM** - 备用，支持更多模型格式，GPU 加速
-3. **Google LiteRT (TFLite)** - 第三选项，最广泛兼容
+## 📦 支持的模型
 
-## 📱 支持的模型
+| 模型 | 参数量 | 推荐设备 | 用途 |
+|------|--------|----------|------|
+| **Gemma 4 E2B** | 2B | 6GB+ RAM | 日常对话、快速响应 |
+| **Gemma 4 E4B** | 4B | 8GB+ RAM | 高质量推理 |
+| **MiniCPM-V 4.6** | 4B | 8GB+ RAM | 图片理解（多模态）|
 
-| 模型 | 参数规模 | 推荐设备 | 用途 |
-|------|----------|----------|------|
-| Gemma 4 E2B | 2B | 中端设备 (6GB+ RAM) | 快速推理、日常对话 |
-| Gemma 4 E4B | 4B | 高端设备 (8GB+ RAM) | 高质量推理 |
-| MiniCPM-V 4.6 | 4B | 高端设备 (8GB+ RAM) | 多模态 (图片理解) |
+应用启动时自动检测硬件能力，推荐最适合的模型。
 
-应用会自动检测硬件并推荐可用模型。
-
-## 🚀 快速开始
-
-### 系统要求
-
-- Android 10 (API 29) 或更高版本
-- 6GB+ RAM (推荐 8GB+)
-- 支持 GPU / NPU 加速 (可选，但推荐)
-- 存储空间: 2-4GB (取决于下载的模型)
-
-### 构建步骤
-
-1. **克隆仓库**
-   ```bash
-   git clone https://github.com/code-sxs/AndroidClaw.git
-   cd AndroidClaw
-   ```
-
-2. **打开项目**
-   - 使用 Android Studio Hedgehog (2023.1.1) 或更高版本
-   - 等待 Gradle 同步完成
-
-3. **下载模型**
-   - 首次启动应用会引导下载模型
-   - 或通过设置 > 模型管理手动下载
-
-4. **运行应用**
-   - 连接 Android 设备或启动模拟器
-   - 点击 Run 按钮
-
-### 从源码构建
-
-```bash
-# 构建 Debug APK
-./gradlew assembleDebug
-
-# 构建 Release APK (需要签名配置)
-./gradlew assembleRelease
-
-# 构建 Bundle (Google Play)
-./gradlew bundleRelease
-```
-
-## 📦 项目结构
-
-```
-AndroidClaw/
-├── app/
-│   ├── src/main/
-│   │   ├── java/com/androidclaw/app/
-│   │   │   ├── MainActivity.kt
-│   │   │   ├── ui/                    # UI 层
-│   │   │   │   ├── theme/            # Material 3 主题
-│   │   │   │   ├── screens/          # 各屏幕 Composable
-│   │   │   │   └── components/       # 复用 UI 组件
-│   │   │   ├── llm/                  # 推理引擎层
-│   │   │   │   ├── LLMManager.kt
-│   │   │   │   ├── MediaPipeEngine.kt
-│   │   │   │   ├── MLCEngine.kt
-│   │   │   │   ├── LiteRTEngine.kt
-│   │   │   │   └── ModelDownloader.kt
-│   │   │   ├── agent/                # Agent 框架
-│   │   │   │   ├── AgentManager.kt
-│   │   │   │   ├── ToolRegistry.kt
-│   │   │   │   └── ConversationManager.kt
-│   │   │   ├── skills/               # Skill 系统
-│   │   │   │   ├── SkillDefinition.kt
-│   │   │   │   ├── calendar/
-│   │   │   │   ├── contacts/
-│   │   │   │   ├── clipboard/
-│   │   │   │   ├── health/
-│   │   │   │   ├── fileops/
-│   │   │   │   └── websearch/
-│   │   │   ├── multimodal/           # 多模态功能
-│   │   │   │   ├── VisionManager.kt
-│   │   │   │   └── CameraManager.kt
-│   │   │   ├── voice/                # 语音功能
-│   │   │   │   ├── ASRManager.kt
-│   │   │   │   └── TTSManager.kt
-│   │   │   └── data/                 # 数据层
-│   │   │       ├── repository/
-│   │   │       └── model/
-│   │   └── res/
-│   └── build.gradle.kts
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle.properties
-├── LICENSE
-└── README.md
-```
+---
 
 ## 🛠️ 内置 Skill
 
-AndroidClaw 支持类似 PhoneClaw 的 Skill 系统，内置以下 Skill:
+| Skill | 功能 | 状态 |
+|-------|------|------|
+| 📅 **日历** | 读取/创建/修改日历事件 | ✅ 已实现 |
+| 📇 **通讯录** | 搜索/读取/创建联系人 | ✅ 已实现 |
+| 📋 **剪贴板** | 读取/写入/清除剪贴板 | ✅ 已实现 |
+| 🌐 **翻译** | 本地文本翻译 | 🚧 开发中 |
+| 📁 **文件操作** | 文件读写管理 | ⏳ 计划中 |
+| ❤️ **健康数据** | Google Fit 数据读取 | ⏳ 计划中 |
+| 🔍 **联网搜索** | 用户主动触发的搜索 | ⏳ 计划中 |
+| 📷 **图片理解** | MiniCPM-V 视觉分析 | ⏳ 计划中 |
 
-- **📅 日历**: 读取/创建/修改日历事件
-- **📇 通讯录**: 搜索/读取联系人信息
-- **📋 剪贴板**: 读取/写入剪贴板内容
-- **🌐 翻译**: 文本翻译 (本地模型)
-- **📁 文件操作**: 读取/写入/删除文件
-- **❤️ 健康数据**: 读取健康数据 (Google Fit)
-- **🔍 联网搜索**: 用户主动触发的联网搜索
-- **📷 图片理解**: 分析图片内容 (MiniCPM-V)
+> Skill 系统基于 `SkillDefinition` 接口，开发者可以轻松扩展自定义 Skill。
 
-## 🎨 UI/UX
+---
 
-AndroidClaw 使用 **Jetpack Compose** + **Material Design 3**:
+## 🚀 快速开始
 
-- **动态配色**: 跟随系统壁纸自动适配
-- **深色模式**: 完整支持
-- **大屏适配**: 支持平板、折叠屏
-- **无障碍**: 完整 TalkBack 支持
+### 前置要求
+
+- **Android Studio** Hedgehog (2023.1.1) 或更高版本
+- **Android SDK** API 29 (Android 10) 或更高
+- **JDK** 17+
+- 一台 Android 设备或模拟器（推荐 8GB+ RAM）
+
+### 构建运行
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/code-sxs/AndroidClaw.git
+cd AndroidClaw
+
+# 2. 用 Android Studio 打开项目
+#    等待 Gradle 同步完成
+
+# 3. 连接设备或启动模拟器后点击 Run
+#    或使用命令行:
+./gradlew assembleDebug
+```
+
+### 首次启动
+
+1. 应用会自动检测设备硬件能力（GPU/NPU/RAM）
+2. 推荐适合你设备的模型
+3. 下载模型（约 2-4GB，取决于选择的模型）
+4. 开始与 AndroidClaw 对话！ 🎉
+
+---
+
+## 📂 项目结构
+
+```
+AndroidClaw/
+├── app/src/main/java/com/androidclaw/app/
+│   ├── app/
+│   │   ├── AndroidClawApplication.kt    # Application 入口
+│   │   └── MainActivity.kt              # 主 Activity
+│   ├── agent/                           # 🤖 Agent 框架
+│   │   ├── AgentManager.kt              # 对话管理 & Tool 调用
+│   │   └── ToolRegistry.kt              # 工具注册中心
+│   ├── llm/                             # 🧠 推理引擎层
+│   │   ├── LLMManager.kt               # 三引擎统一管理
+│   │   ├── ModelDownloader.kt           # 模型下载 (断点续传)
+│   │   ├── engine/
+│   │   │   ├── BaseEngine.kt            # 引擎抽象基类
+│   │   │   ├── MediaPipeEngine.kt       # MediaPipe LLM (★首选)
+│   │   │   ├── MLCEngine.kt             # MLC-LLM (☆备用)
+│   │   │   └── LiteRTEngine.kt          # LiteRT (☆第三)
+│   │   └── model/
+│   │       ├── Model.kt                 # 模型数据定义
+│   │       └── HardwareDetector.kt      # 硬件能力检测
+│   ├── skills/                          # 🛠️ Skill 系统
+│   │   ├── SkillDefinition.kt           # Skill 接口定义
+│   │   ├── CalendarSkill.kt             # 📅 日历
+│   │   ├── ContactsSkill.kt             # 📇 通讯录
+│   │   └── ClipboardSkill.kt            # 📋 剪贴板
+│   └── ui/                              # 🎨 UI 层 (Compose)
+│       ├── navigation/
+│       │   └── AndroidClawNavHost.kt    # 导航路由
+│       ├── screens/
+│       │   ├── ChatScreen.kt            # 聊天界面
+│       │   ├── ModelManagementScreen.kt # 模型管理
+│       │   └── SkillManagementScreen.kt # Skill 管理
+│       └── theme/
+│           ├── Theme.kt                 # M3 主题 (动态配色)
+│           ├── Color.kt                 # 颜色定义
+│           └── Typography.kt            # 字体样式
+├── app/src/test/                        # 🧪 单元测试
+│   └── skills/
+│       ├── CalendarSkillTest.kt
+│       ├── ContactsSkillTest.kt
+│       └── ClipboardSkillTest.kt
+├── build.gradle.kts
+├── settings.gradle.kts
+├── LICENSE                              # Apache 2.0
+└── README.md
+```
+
+---
 
 ## 🔒 隐私与安全
 
-- **100% 离线**: 无数据上传，无云端依赖
-- **本地推理**: 所有 AI 计算都在设备上完成
-- **权限最小化**: 仅在需要时请求权限
-- **开源透明**: Apache 2.0 协议，代码完全透明
+| 安全特性 | 说明 |
+|----------|------|
+| 🔒 **100% 离线** | 零网络依赖，零数据上传 |
+| 🧠 **本地推理** | 所有 AI 计算在设备上完成 |
+| 🔑 **权限最小化** | 仅在需要时请求必要权限 |
+| 📖 **开源透明** | Apache 2.0，代码完全可审计 |
+| 🚫 **无追踪** | 无分析、无遥测、无第三方 SDK |
+
+---
 
 ## 🗺️ 开发路线图
 
-### Phase 1: 基础设施 + 核心聊天 (当前)
-- [x] 项目初始化
-- [ ] 三引擎推理层实现
-- [ ] 模型下载管理
-- [ ] 基础聊天 UI
-- [ ] 内置 Skill (日历、通讯录、剪贴板、翻译)
+### ✅ Phase 1: 基础设施 + 核心聊天（进行中）
+- [x] 项目初始化 & GitHub 仓库
+- [x] 三引擎推理层框架 (MediaPipe / MLC / LiteRT)
+- [x] MediaPipe 引擎完整实现
+- [x] 硬件检测 & 模型下载管理
+- [x] Skill 系统框架 + 3 个内置 Skill
+- [x] Agent 框架核心
+- [x] 基础 UI (聊天 / 模型管理 / 导航)
+- [ ] MLC-LLM & LiteRT 引擎完整实现
+- [ ] 多模型协作链路
+- [ ] 单元测试 & 集成测试
 
-### Phase 2: 扩展 Skill + 多模型协作
-- [ ] 文件操作、健康数据、照片库 Skill
-- [ ] 多模型协作链路 (小模型参数提取 + 大模型推理)
+### 🚧 Phase 2: 扩展 Skill + 多模型协作
+- [ ] 文件操作 / 健康数据 / 照片库 Skill
+- [ ] 小模型参数提取 + 大模型推理协作
 - [ ] 联网搜索 Skill
 
-### Phase 3: 多模态 + 语音
+### ⏳ Phase 3: 多模态 + 语音
 - [ ] MiniCPM-V 4.6 图片理解
 - [ ] LIVE 摄像头实时模式
-- [ ] ASR (语音识别) + TTS (语音合成)
+- [ ] ASR 语音识别 + TTS 语音合成
 
-### Phase 4: 跨 App 自动化
+### ⏳ Phase 4: 跨 App 自动化
 - [ ] App Intents / Shortcuts 集成
 - [ ] URL Scheme / Deep Link 调度
 - [ ] 通知监听与唤起
 
-### Phase 5: 外部硬件扩展
-- [ ] 外部视频输入
-- [ ] 屏幕画面理解
+### ⏳ Phase 5: 外部硬件扩展
+- [ ] 外部视频输入 & 屏幕画面理解
 - [ ] 外部硬件联动
 
-## 🤝 贡献指南
+---
 
-我们欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详情。
+## 🤝 贡献
 
-### 多 Agent 协作审查
+欢迎贡献！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-每次提交前会通过多 Agent 协作审查:
-1. **代码质量 Agent** - 检查 Kotlin 规范、Compose 最佳实践
-2. **UI/UX Agent** - 检查 Material Design 3 合规性、无障碍
-3. **安全 Agent** - 检查权限使用、数据隐私、推理引擎安全
+### 开发流程
 
-不合格则自动打回重做。
+本项目采用 **多 Agent 协作开发** 模式：
+1. Fork 并创建功能分支
+2. 提交前通过多 Agent 协作审查（代码质量 / UI/UX / 安全）
+3. 提交 Pull Request
 
-## 📄 许可证
-
-本项目采用 **Apache License 2.0** 开源协议。
-
-详见 [LICENSE](LICENSE) 文件。
+---
 
 ## 🙏 致谢
 
-- [PhoneClaw](https://github.com/kellyvv/PhoneClaw) - iOS 版本，本项目的灵感来源
-- [MediaPipe](https://developers.google.com/mediapipe) - Google 的 ML 推理框架
-- [MLC-LLM](https://github.com/mlc-ai/mlc-llm) - 高效 LLM 推理引擎
-- [Google LiteRT](https://ai.google.dev/edge/litert) - TensorFlow Lite 的继任者
+- [**PhoneClaw**](https://github.com/kellyvv/PhoneClaw) — iOS 版本，本项目的灵感来源与架构参考
+- [**MediaPipe**](https://developers.google.com/mediapipe) — Google ML 推理框架
+- [**MLC-LLM**](https://mlc.ai/mlc-llm/) — 通用机器学习编译器
+- [**Google LiteRT**](https://ai.google.dev/edge/litert) — 端侧推理运行时
 
-## 📧 联系方式
+---
 
-- **GitHub Issues**: [提交问题](https://github.com/code-sxs/AndroidClaw/issues)
-- **讨论区**: [参与讨论](https://github.com/code-sxs/AndroidClaw/discussions)
+## 📄 许可证
+
+[Apache License 2.0](LICENSE)
 
 ---
 
 <p align="center">
-  Made with ❤️ by the AndroidClaw community
+  <strong>⭐ 如果这个项目对你有帮助，请给一个 Star！</strong>
 </p>

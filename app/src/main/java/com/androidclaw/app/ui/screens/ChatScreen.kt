@@ -8,7 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,7 +24,10 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(
+    onNavigateToModelManagement: () -> Unit = {},
+    onNavigateToSkillManagement: () -> Unit = {}
+) {
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
@@ -29,13 +35,50 @@ fun ChatScreen() {
     var messages by remember { mutableStateOf(listOf<ChatMessage>()) }
     var inputText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("AndroidClaw") },
                 actions = {
-                    // TODO: 添加菜单 (模型管理、Skill 管理等)
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "菜单"
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("模型管理") },
+                            onClick = {
+                                showMenu = false
+                                onNavigateToModelManagement()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.SmartToy,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Skill 管理") },
+                            onClick = {
+                                showMenu = false
+                                onNavigateToSkillManagement()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Extension,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
             )
         },
@@ -120,7 +163,8 @@ fun ChatMessageItem(message: ChatMessage) {
         ) {
             Text(
                 text = message.content,
-                modifier = Modifier.padding(12.dp),                style = MaterialTheme.typography.bodyMedium
+                modifier = Modifier.padding(12.dp),
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

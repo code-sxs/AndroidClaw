@@ -62,6 +62,7 @@ import com.androidclaw.app.llm.model.InferenceEngine
 import com.androidclaw.app.llm.model.ModelConfig
 import com.androidclaw.app.llm.model.ModelSize
 import com.androidclaw.app.llm.model.ModelType
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 

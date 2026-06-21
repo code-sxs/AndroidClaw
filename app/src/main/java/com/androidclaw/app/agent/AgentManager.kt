@@ -1,6 +1,6 @@
 // AgentManager.kt
 // Agent 框架核心
-// 负责: 对话管理、工具调用、推理协调
+// 负责: 对话管理、工具调用、推理协调、语音集成
 
 package com.androidclaw.app.agent
 
@@ -8,6 +8,7 @@ import android.content.Context
 import android.util.Log
 import com.androidclaw.app.llm.LLMManager
 import com.androidclaw.app.skills.ToolResult
+import com.androidclaw.app.voice.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +53,14 @@ class AgentManager private constructor(private val context: Context) {
 
     // 系统提示 (包含 Tool 定义)
     private var systemPrompt: String = DEFAULT_SYSTEM_PROMPT
+
+    // 语音管理器
+    private val voiceManager: VoiceManager by lazy {
+        VoiceManager.getInstance(context)
+    }
+
+    // 语音配置
+    private var voiceConfig: VoiceConfig = VoiceConfig()
 
     init {
         Log.i(TAG, "AgentManager initializing...")
@@ -117,6 +126,11 @@ class AgentManager private constructor(private val context: Context) {
             val assistantMsg = Message(role = "assistant", content = response)
             conversationHistory.add(assistantMsg)
 
+            // 5. 如果启用了语音输出，播报回复
+            if (voiceConfig.voiceOutputEnabled) {
+                voiceManager.speak(response)
+            }
+
             Log.i(TAG, "Message sent successfully, response length: ${response.length}")
             response
 
@@ -124,6 +138,15 @@ class AgentManager private constructor(private val context: Context) {
             Log.e(TAG, "Failed to send message", e)
             "Error: ${e.message}"
         }
+    }
+
+    /**
+     * 发送语音消息
+     * @param voiceText 语音识别结果
+     */
+    suspend fun sendVoiceMessage(voiceText: String): String {
+        Log.i(TAG, "Sending voice message: $voiceText")
+        return sendMessage(voiceText)
     }
 
     /**
@@ -189,6 +212,48 @@ class AgentManager private constructor(private val context: Context) {
     fun setSystemPrompt(prompt: String) {
         Log.i(TAG, "Setting system prompt")
         systemPrompt = prompt
+    }
+
+    /**
+     * 更新语音配置
+     */
+    fun updateVoiceConfig(config: VoiceConfig) {
+        Log.i(TAG, "Updating voice config: $config")
+        this.voiceConfig = config
+        voiceManager.updateConfig(config)
+    }
+
+    /**
+     * 开始语音输入
+     */
+    fun startVoiceInput(listener: VoiceManagerListener? = null) {
+        Log.i(TAG, "Starting voice input")
+        listener?.let { voiceManager.listener = it }
+        voiceManager.startListening()
+    }
+
+    /**
+     * 停止语音输入
+     */
+    fun stopVoiceInput() {
+        Log.i(TAG, "Stopping voice input")
+        voiceManager.stopListening()
+    }
+
+    /**
+     * 播报文本
+     */
+    fun speak(text: String) {
+        Log.i(TAG, "Speaking: $text")
+        voiceManager.speak(text)
+    }
+
+    /**
+     * 停止播报
+     */
+    fun stopSpeaking() {
+        Log.i(TAG, "Stopping speech")
+        voiceManager.stopSpeaking()
     }
 
     /**

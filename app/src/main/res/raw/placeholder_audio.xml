@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  placeholder_audio.xml
+  
+  这是一个占位说明文件。
+  实际的音频资源文件应放置在 res/raw/ 目录下：
+  
+  - voice_start.mp3：开始录音提示音
+  - voice_end.mp3：结束录音提示音
+  - tts_start.mp3：TTS 开始播报提示音（可选）
+  
+  代码中已经实现了 fallback 机制：
+  如果音频文件不存在，将不播放提示音，不影响功能使用。
+  
+  建议的音频时长：
+  - voice_start.mp3：0.3-0.5 秒的清脆提示音
+  - voice_end.mp3：0.3-0.5 秒的清脆提示音
+  - tts_start.mp3：0.2-0.3 秒的柔和提示音
+  
+  音频格式：MP3 或 OGG
+-->
+<resources>
+    <!-- 占位说明 -->
+</resources>

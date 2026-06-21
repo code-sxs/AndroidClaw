@@ -28,6 +28,13 @@
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <uses-feature android:name="android.hardware.gpu" android:required="false" />
 
+    <!-- 语音识别服务查询 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.RECOGNIZE_SPEECH" />
+        </intent>
+    </queries>
+
     <application
         android:name=".AndroidClawApplication"
         android:allowBackup="true"

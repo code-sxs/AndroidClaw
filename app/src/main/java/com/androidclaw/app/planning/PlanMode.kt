@@ -4,11 +4,13 @@
 
 package com.androidclaw.app.planning
 
+import android.content.Context
 import android.util.Log
-import com.androidclaw.app.agent.AgentManager
-import com.androidclaw.app.agent.ToolResult
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 
 /**
@@ -17,8 +19,8 @@ import java.util.UUID
 data class ExecutionPlan(
     val id: String = UUID.randomUUID().toString(),
     val goal: String,                      // 用户目标
-    val steps: List<PlanStep>,            // 执行步骤
-    val estimatedTimeSeconds: Int = 0,   // 预计耗时（秒）
+    val steps: List<PlanStep>,             // 执行步骤
+    val estimatedTimeSeconds: Int = 0,     // 预计耗时（秒）
     val createdAt: Long = System.currentTimeMillis()
 )
 
@@ -26,13 +28,13 @@ data class ExecutionPlan(
  * 计划步骤
  */
 data class PlanStep(
-    val index: Int,                       // 步骤索引
+    val index: Int,                        // 步骤索引
     val description: String,               // 步骤描述
-    val toolName: String? = null,         // 工具名称（如果需要调用工具）
+    val toolName: String? = null,          // 工具名称（如果需要调用工具）
     val parameters: Map<String, Any> = emptyMap(), // 工具参数
     val status: StepStatus = StepStatus.PENDING,   // 步骤状态
-    val result: String? = null,           // 执行结果
-    val error: String? = null             // 错误信息
+    val result: String? = null,            // 执行结果
+    val error: String? = null              // 错误信息
 )
 
 /**
@@ -57,227 +59,184 @@ sealed class PlanExecutionEvent {
     data class WaitingConfirmation(val stepIndex: Int, val step: PlanStep) : PlanExecutionEvent()
     data class PlanCompleted(val success: Boolean, val message: String) : PlanExecutionEvent()
     data class ProgressUpdate(val completedSteps: Int, val totalSteps: Int) : PlanExecutionEvent()
+    data class PlanGenerationStarted(val request: String) : PlanExecutionEvent()
+    data class PlanGenerated(val plan: ExecutionPlan) : PlanExecutionEvent()
+    data class PlanGenerationFailed(val error: String) : PlanExecutionEvent()
+}
+
+/**
+ * Plan 模式状态
+ */
+sealed class PlanModeState {
+    data object Idle : PlanModeState()
+    data class GeneratingPlan(val request: String) : PlanModeState()
+    data class PlanReady(val plan: ExecutionPlan) : PlanModeState()
+    data class Executing(val plan: ExecutionPlan, val currentStep: Int) : PlanModeState()
+    data class Completed(val plan: ExecutionPlan, val success: Boolean) : PlanModeState()
+    data class Error(val message: String) : PlanModeState()
 }
 
 /**
  * Plan 模式管理器
  * 负责：生成执行计划、执行计划、暂停/继续/取消
  */
-class PlanManager private constructor(private val context: android.content.Context) {
+class PlanManager private constructor(private val context: Context) {
 
     companion object {
         private const val TAG = "PlanManager"
 
         private var INSTANCE: PlanManager? = null
 
-        fun getInstance(context: android.content.Context): PlanManager {
+        fun getInstance(context: Context): PlanManager {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: PlanManager(context.applicationContext).also { INSTANCE = it }
             }
         }
     }
 
-    private val agentManager: AgentManager by lazy {
-        AgentManager.getInstance(context)
+    private val planGenerator: PlanGenerator by lazy { PlanGenerator(context) }
+    private val planExecutor: PlanExecutor by lazy { PlanExecutor(context) }
+
+    // 状态流（供 UI 观察）
+    private val _state = MutableStateFlow<PlanModeState>(PlanModeState.Idle)
+    val state: StateFlow<PlanModeState> = _state.asStateFlow()
+
+    // 当前计划
+    private var currentPlan: ExecutionPlan? = null
+
+    // 当前执行任务
+    private var executionJob: Job? = null
+
+    init {
+        Log.i(TAG, "PlanManager initialized")
     }
 
-    private var currentPlan: ExecutionPlan? = null
-    private var executionJob: kotlinx.coroutines.Job? = null
+    // ─────────────────────────────────────────────────────────────────────────
+    // 公开 API
+    // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * 生成执行计划
      * @param userRequest 用户请求
-     * @return 执行计划
+     * @return ExecutionPlan 执行计划
      */
-    suspend fun generatePlan(userRequest: String): ExecutionPlan = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-        Log.i(TAG, "Generating plan for: $userRequest")
+    suspend fun generatePlan(userRequest: String): ExecutionPlan {
+        Log.i(TAG, "generatePlan: $userRequest")
+        _state.value = PlanModeState.GeneratingPlan(userRequest)
 
-        try {
-            // 使用 AI 生成执行计划
-            val prompt = buildPlanGenerationPrompt(userRequest)
-            val response = agentManager.sendMessage(prompt)
-
-            // 解析 AI 响应，提取执行步骤
-            val steps = parsePlanResponse(response)
-
-            val plan = ExecutionPlan(
-                goal = userRequest,
-                steps = steps,
-                estimatedTimeSeconds = steps.size * 30 // 假设每步 30 秒
-            )
-
-            Log.i(TAG, "Plan generated: ${steps.size} steps")
+        return try {
+            val plan = planGenerator.generatePlan(userRequest)
+            currentPlan = plan
+            _state.value = PlanModeState.PlanReady(plan)
+            Log.i(TAG, "Plan generated: ${plan.steps.size} steps")
             plan
-
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to generate plan", e)
+            Log.e(TAG, "Plan generation failed", e)
+            _state.value = PlanModeState.Error("计划生成失败: ${e.message}")
             throw e
         }
     }
 
     /**
      * 执行计划
-     * @param plan 执行计划
+     * @param plan 执行计划（如果为 null，使用当前计划）
      * @param confirmEachStep 是否每步都等待用户确认
+     * @param onStepUpdate 步骤更新回调
      * @return 执行事件 Flow
      */
     suspend fun executePlan(
-        plan: ExecutionPlan,
-        confirmEachStep: Boolean = false
-    ): Flow<PlanExecutionEvent> = flow {
-        Log.i(TAG, "Executing plan: ${plan.id}, steps: ${plan.steps.size}, confirmEachStep: $confirmEachStep")
+        plan: ExecutionPlan? = null,
+        confirmEachStep: Boolean = false,
+        onStepUpdate: ((PlanStep) -> Unit)? = null
+    ): Flow<PlanExecutionEvent> {
+        val targetPlan = plan ?: currentPlan
+            ?: throw IllegalStateException("No plan to execute")
 
-        currentPlan = plan
-        var success = true
+        Log.i(TAG, "executePlan: ${targetPlan.id}, confirmEachStep=$confirmEachStep")
+        _state.value = PlanModeState.Executing(targetPlan, 0)
+
+        // 设置确认回调（如果需要）
+        if (confirmEachStep) {
+            planExecutor.setConfirmationCallback { step ->
+                // 默认行为：等待用户确认
+                // UI 层需要通过其他方式提供确认结果
+                UserConfirmationResult.Approved
+            }
+        }
+
+        return planExecutor.executePlan(targetPlan, onStepUpdate)
+    }
+
+    /**
+     * 直接执行（一步到位，自动状态管理）
+     * 生成计划 + 执行，内部处理所有状态更新
+     */
+    suspend fun generateAndExecute(
+        userRequest: String,
+        confirmEachStep: Boolean = false,
+        onStepUpdate: ((PlanStep) -> Unit)? = null
+    ): Flow<PlanExecutionEvent> = kotlinx.coroutines.flow.flow {
+        // 通知开始生成
+        emit(PlanExecutionEvent.PlanGenerationStarted(userRequest))
 
         try {
-            for ((index, step) in plan.steps.withIndex()) {
-                // 更新步骤状态
-                val currentStep = step.copy(status = StepStatus.RUNNING)
-                emit(PlanExecutionEvent.StepStarted(index, currentStep))
+            val plan = planGenerator.generatePlan(userRequest)
+            currentPlan = plan
+            emit(PlanExecutionEvent.PlanGenerated(plan))
 
-                // 如果需要确认，等待用户确认
-                if (confirmEachStep || step.toolName != null) {
-                    emit(PlanExecutionEvent.WaitingConfirmation(index, currentStep))
-                    // TODO: 需要实现等待用户确认的逻辑
-                    // 目前先继续执行
+            // 执行计划
+            planExecutor.executePlan(plan, onStepUpdate).collect { event ->
+                emit(event)
+
+                // 更新状态
+                when (event) {
+                    is PlanExecutionEvent.PlanCompleted -> {
+                        _state.value = PlanModeState.Completed(plan, event.success)
+                    }
+                    is PlanExecutionEvent.StepStarted -> {
+                        _state.value = PlanModeState.Executing(plan, event.stepIndex)
+                    }
+                    else -> {}
                 }
-
-                // 执行步骤
-                try {
-                    val result = executeStep(currentStep)
-                    
-                    // 更新步骤状态为完成
-                    val completedStep = currentStep.copy(
-                        status = StepStatus.COMPLETED,
-                        result = result
-                    )
-                    emit(PlanExecutionEvent.StepCompleted(index, result))
-                    
-                    Log.i(TAG, "Step $index completed: $result")
-
-                } catch (e: Exception) {
-                    Log.e(TAG, "Step $index failed", e)
-                    
-                    // 更新步骤状态为失败
-                    val failedStep = currentStep.copy(
-                        status = StepStatus.FAILED,
-                        error = e.message
-                    )
-                    emit(PlanExecutionEvent.StepFailed(index, e.message ?: "Unknown error"))
-                    
-                    success = false
-                    
-                    // 询问用户是否继续
-                    // TODO: 实现错误处理策略（停止/跳过/重试）
-                    break
-                }
-
-                // 发送进度更新
-                emit(PlanExecutionEvent.ProgressUpdate(index + 1, plan.steps.size))
             }
-
-            // 计划执行完成
-            val message = if (success) "Plan executed successfully" else "Plan execution failed"
-            emit(PlanExecutionEvent.PlanCompleted(success, message))
-            Log.i(TAG, "Plan execution completed: $success")
-
         } catch (e: Exception) {
-            Log.e(TAG, "Plan execution error", e)
-            emit(PlanExecutionEvent.PlanCompleted(false, "Error: ${e.message}"))
+            Log.e(TAG, "generateAndExecute failed", e)
+            emit(PlanExecutionEvent.PlanGenerationFailed(e.message ?: "Unknown error"))
+            _state.value = PlanModeState.Error(e.message ?: "Unknown error")
         }
     }
 
     /**
      * 取消计划执行
      */
-    fun cancelPlan(planId: String) {
-        Log.i(TAG, "Cancelling plan: $planId")
+    fun cancelPlan() {
+        Log.i(TAG, "cancelPlan")
+        planExecutor.cancel()
+        currentPlan?.let {
+            _state.value = PlanModeState.Completed(it, false)
+        }
+    }
 
-        // TODO: 取消正在执行的步骤
-        executionJob?.cancel()
-
+    /**
+     * 清除当前计划，回到空闲状态
+     */
+    fun clearPlan() {
+        Log.i(TAG, "clearPlan")
+        cancelPlan()
         currentPlan = null
+        _state.value = PlanModeState.Idle
     }
 
     /**
-     * 执行单个步骤
+     * 获取当前计划
      */
-    private suspend fun executeStep(step: PlanStep): String {
-        Log.i(TAG, "Executing step ${step.index}: ${step.description}")
-
-        return if (step.toolName != null) {
-            // 调用工具
-            val result = agentManager.callTool(step.toolName, step.parameters)
-            
-            when (result) {
-                is ToolResult.Success -> {
-                    result.data?.toString() ?: "Step completed successfully"
-                }
-                is ToolResult.Error -> {
-                    throw Exception("Tool execution failed: ${result.message}")
-                }
-                is ToolResult.Cancelled -> {
-                    throw Exception("Tool execution cancelled")
-                }
-            }
-        } else {
-            // 不调用工具，直接返回描述
-            "Step completed: ${step.description}"
-        }
-    }
+    fun getCurrentPlan(): ExecutionPlan? = currentPlan
 
     /**
-     * 构建计划生成提示词
+     * 重置到空闲状态
      */
-    private fun buildPlanGenerationPrompt(userRequest: String): String {
-        return """
-            You are a task planning assistant for AndroidClaw.
-            User request: $userRequest
-            
-            Generate a step-by-step execution plan.
-            Each step should be clear and actionable.
-            
-            Output format (JSON):
-            {
-                "steps": [
-                    {
-                        "description": "Step description",
-                        "toolName": "tool_name_if_needed",
-                        "parameters": {"param1": "value1"}
-                    }
-                ]
-            }
-            
-            Only output the JSON, no extra text.
-        """.trimIndent()
-    }
-
-    /**
-     * 解析计划响应
-     */
-    private fun parsePlanResponse(response: String): List<PlanStep> {
-        return try {
-            // TODO: 使用 JSON 解析响应
-            // 目前返回模拟数据
-            listOf(
-                PlanStep(
-                    index = 0,
-                    description = "Step 1: Analyze request",
-                    toolName = null,
-                    parameters = emptyMap()
-                ),
-                PlanStep(
-                    index = 1,
-                    description = "Step 2: Execute action",
-                    toolName = "sample_tool",
-                    parameters = mapOf("param" to "value")
-                )
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse plan response", e)
-            emptyList()
-        }
+    fun reset() {
+        clearPlan()
     }
 
     /**
@@ -285,7 +244,7 @@ class PlanManager private constructor(private val context: android.content.Conte
      */
     fun release() {
         Log.i(TAG, "Releasing PlanManager")
-        cancelPlan(currentPlan?.id ?: "")
+        cancelPlan()
         currentPlan = null
     }
 }

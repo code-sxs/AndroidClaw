@@ -44,6 +44,31 @@ interface SkillDefinition {
         get() = SecurityProfile()
 
     /**
+     * 源代码（用于生成/共享场景）
+     * AI 生成的 Skill 会保存原始代码
+     */
+    val sourceCode: String?
+        get() = null
+
+    /**
+     * 是否由 AI 生成
+     */
+    val isGenerated: Boolean
+        get() = false
+
+    /**
+     * 生成时的提示词（用于复现）
+     */
+    val generationPrompt: String?
+        get() = null
+
+    /**
+     * 生成时间戳
+     */
+    val generatedAt: Long?
+        get() = null
+
+    /**
      * 初始化 Skill
      */
     suspend fun initialize(context: Context)

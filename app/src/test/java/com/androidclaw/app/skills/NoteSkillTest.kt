@@ -3,11 +3,13 @@
 
 package com.androidclaw.app.skills
 
+import android.content.Context
 import com.androidclaw.app.skills.ToolResult
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 
 class NoteSkillTest {
 

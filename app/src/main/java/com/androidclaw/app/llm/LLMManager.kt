@@ -1,11 +1,14 @@
 // LLMManager.kt
 // 三引擎推理层 - 统一抽象接口
 // 管理 MediaPipe LLM / MLC-LLM / LiteRT 三个推理引擎
+// 支持第三方 AI 提供商 (OpenAI, Anthropic, Google, Custom)
 
 package com.androidclaw.app.llm
 
 import android.content.Context
 import android.util.Log
+import com.androidclaw.app.ai.AiProvider
+import com.androidclaw.app.ai.LocalProvider
 import com.androidclaw.app.llm.engine.MediaPipeEngine
 import com.androidclaw.app.llm.engine.MLCEngine
 import com.androidclaw.app.llm.engine.LiteRTEngine
@@ -43,6 +46,10 @@ class LLMManager private constructor(private val context: Context) {
 
     // 当前活跃的引擎
     private var activeEngine: InferenceEngine = InferenceEngine.NONE
+
+    // AI 提供商 (第三方 AI)
+    private var aiProvider: AiProvider? = null
+    private var useAiProvider: Boolean = false
 
     // 硬件能力
     private var hardwareCapability: HardwareCapability? = null
@@ -211,10 +218,56 @@ class LLMManager private constructor(private val context: Context) {
     }
 
     /**
+     * 设置 AI 提供商
+     * 如果设置了 AI 提供商，所有推理请求将路由到该提供商
+     * @param provider AI 提供商 (null 表示使用本地模型)
+     */
+    fun setAiProvider(provider: AiProvider?) {
+        Log.i(TAG, "Setting AI provider: ${provider?.getProviderName() ?: "Local Model"}")
+        this.aiProvider = provider
+        this.useAiProvider = provider != null
+    }
+
+    /**
+     * 获取当前 AI 提供商
+     */
+    fun getAiProvider(): AiProvider? {
+        return aiProvider
+    }
+
+    /**
+     * 是否正在使用 AI 提供商
+     */
+    fun isUsingAiProvider(): Boolean {
+        return useAiProvider
+    }
+
+    /**
      * 生成文本 (推理)
+     * 如果设置了 AI 提供商，则路由到提供商；否则使用本地模型
      */
     suspend fun generateText(prompt: String): String = withContext(Dispatchers.IO) {
-        when (activeEngine) {
+        // 优先使用 AI 提供商
+        if (useAiProvider && aiProvider != null) {
+            Log.d(TAG, "Using AI provider for text generation")
+            return try {
+                aiProvider!!.generateText(prompt, emptyList())
+            } catch (e: Exception) {
+                Log.e(TAG, "AI provider failed, falling back to local model", e)
+                // 降级到本地模型
+                generateTextLocal(prompt)
+            }
+        }
+
+        // 使用本地模型
+        return generateTextLocal(prompt)
+    }
+
+    /**
+     * 本地模型生成文本
+     */
+    private suspend fun generateTextLocal(prompt: String): String {
+        return when (activeEngine) {
             InferenceEngine.MEDIAPIPE -> mediaPipeEngine?.generate(prompt) ?: ""
             InferenceEngine.MLC_LLM -> mlcEngine?.generate(prompt) ?: ""
             InferenceEngine.LITERT -> liteRTEngine?.generate(prompt) ?: ""
@@ -227,8 +280,31 @@ class LLMManager private constructor(private val context: Context) {
 
     /**
      * 流式生成文本
+     * 如果设置了 AI 提供商，则路由到提供商；否则使用本地模型
      */
     suspend fun generateTextStream(prompt: String, onToken: (String) -> Unit) = withContext(Dispatchers.IO) {
+        // 优先使用 AI 提供商
+        if (useAiProvider && aiProvider != null) {
+            Log.d(TAG, "Using AI provider for stream generation")
+            try {
+                // TODO: AiProvider 需要添加 Flow 支持
+                val text = aiProvider!!.generateText(prompt, emptyList())
+                onToken(text)
+            } catch (e: Exception) {
+                Log.e(TAG, "AI provider stream failed, falling back to local model", e)
+                generateTextStreamLocal(prompt, onToken)
+            }
+            return@withContext
+        }
+
+        // 使用本地模型
+        generateTextStreamLocal(prompt, onToken)
+    }
+
+    /**
+     * 本地模型流式生成文本
+     */
+    private suspend fun generateTextStreamLocal(prompt: String, onToken: (String) -> Unit) {
         when (activeEngine) {
             InferenceEngine.MEDIAPIPE -> mediaPipeEngine?.generateStream(prompt, onToken)
             InferenceEngine.MLC_LLM -> mlcEngine?.generateStream(prompt, onToken)
@@ -251,5 +327,10 @@ class LLMManager private constructor(private val context: Context) {
         mlcEngine = null
         liteRTEngine = null
         activeEngine = InferenceEngine.NONE
+
+        // 释放 AI 提供商
+        aiProvider?.release()
+        aiProvider = null
+        useAiProvider = false
     }
 }

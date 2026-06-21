@@ -16,7 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.androidclaw.app.ui.screens.ChatScreen
 import com.androidclaw.app.ui.screens.ModelManagementScreen
+import com.androidclaw.app.ui.screens.SecurityReportScreen
 import com.androidclaw.app.ui.screens.SkillManagementScreen
+import com.androidclaw.app.ui.screens.SkillMarketScreen
 
 /**
  * 导航路由
@@ -25,6 +27,10 @@ sealed class Screen(val route: String) {
     object Chat : Screen("chat")
     object ModelManagement : Screen("model_management")
     object SkillManagement : Screen("skill_management")
+    object SecurityReport : Screen("security_report/{skillName}") {
+        fun createRoute(skillName: String) = "security_report/$skillName"
+    }
+    object SkillMarket : Screen("skill_market")
     object Settings : Screen("settings")
 }
 
@@ -79,6 +85,24 @@ fun AndroidClawNavHost(
             }
         ) {
             SkillManagementScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToMarket = {
+                    navController.navigate(Screen.SkillMarket.route)
+                }
+            )
+        }
+
+        // Skill 市场界面
+        composable(
+            route = Screen.SkillMarket.route,
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { it }) + fadeIn()
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+            }
+        ) {
+            SkillMarketScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

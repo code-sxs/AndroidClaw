@@ -37,6 +37,13 @@ interface SkillDefinition {
     val requiredPermissions: List<String>
 
     /**
+     * Skill 自报的安全信息
+     * 用于安装时与安全扫描结果对比，检测声明不一致
+     */
+    val securityProfile: SecurityProfile
+        get() = SecurityProfile()
+
+    /**
      * 初始化 Skill
      */
     suspend fun initialize(context: Context)
@@ -79,6 +86,34 @@ data class ToolParameter(
     val type: String,             // 参数类型 (string / int / boolean / etc.)
     val required: Boolean,        // 是否必需
     val description: String       // 参数描述
+)
+
+/**
+ * Skill 安全配置文件
+ * Skill 开发者声明此 Skill 的安全行为
+ * 用于与安全扫描结果进行对比验证
+ */
+data class SecurityProfile(
+    /**
+     * 声明需要网络访问权限（如调用 API、下载资源等）
+     */
+    val declaresNetworkAccess: Boolean = false,
+    /**
+     * 声明访问个人数据（联系人、短信、位置等）
+     */
+    val accessesPersonalData: Boolean = false,
+    /**
+     * 声明需要访问外部存储
+     */
+    val declaresExternalStorage: Boolean = false,
+    /**
+     * 开发者联系方式（邮箱、网站等）
+     */
+    val authorContact: String? = null,
+    /**
+     * 隐私政策 URL
+     */
+    val privacyPolicyUrl: String? = null
 )
 
 /**

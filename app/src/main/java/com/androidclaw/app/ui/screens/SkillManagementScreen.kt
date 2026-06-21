@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -139,7 +140,8 @@ object SkillManager {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SkillManagementScreen(
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToMarket: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -160,6 +162,14 @@ fun SkillManagementScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "返回"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToMarket) {
+                        Icon(
+                            imageVector = Icons.Default.Store,
+                            contentDescription = "Skill 市场"
                         )
                     }
                 }

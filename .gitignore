@@ -1,0 +1,53 @@
+# Android 构建输出
+build/
+*.apk
+*.ap_
+*.dex
+
+# 本地配置文件
+local.properties
+gradle.properties.local
+
+# IDE 文件
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Gradle 文件
+.gradle/
+**/build/
+gradle/wrapper/gradle-wrapper.jar
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志文件
+*.log
+
+# 测试报告
+test-results/
+tests/
+coverage/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 模型文件 (太大，不应该提交到 Git)
+*.tflite
+*.litertlm
+*.gguf
+*.bin
+*.mlc
+models/
+
+# 密钥和敏感信息
+*.jks
+*.keystore
+secrets.properties

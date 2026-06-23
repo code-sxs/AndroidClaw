@@ -173,23 +173,8 @@ class NetworkSkill : SkillDefinition {
             else -> "unknown"
         }
 
-        // 如果是移动网络，获取具体类型
-        val mobileType = if (type == "mobile") {
-            try {
-                val tm = cm::class.java.getMethod(
-                    "getActiveNetwork",
-                    android.os.Build.VERSION.SDK_INT
-                )
-                // 简化处理 - 仅返回网络类型名称
-                "cellular"
-            } catch (e: Exception) {
-                "mobile"
-            }
-        } else null
-
         return ToolResult.Success(mapOf(
             "type" to type,
-            "mobile_type" to mobileType,
             "is_connected" to (type != "none"),
             "has_internet" to (capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false)
         ))

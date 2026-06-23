@@ -29,11 +29,12 @@ class SmsSkill : SkillDefinition {
             Telephony.Sms.READ
         )
 
+        // 使用字符串字面量而不是常量，以兼容不同 Android 版本
         private val CONVERSATION_PROJECTION = arrayOf(
             Telephony.Sms.Conversations._ID,
             Telephony.Sms.Conversations.SNIPPET,
-            Telephony.Sms.Conversations.MSG_COUNT,
-            Telephony.Sms.Conversations.RECIPIENT_IDS
+            "msg_count",
+            "recipient_ids"
         )
     }
 
@@ -133,8 +134,8 @@ class SmsSkill : SkillDefinition {
         cursor?.use {
             val idCol = it.getColumnIndex(Telephony.Sms.Conversations._ID)
             val snippetCol = it.getColumnIndex(Telephony.Sms.Conversations.SNIPPET)
-            val countCol = it.getColumnIndex(Telephony.Sms.Conversations.MSG_COUNT)
-            val recipientsCol = it.getColumnIndex(Telephony.Sms.Conversations.RECIPIENT_IDS)
+            val countCol = it.getColumnIndex("msg_count")
+            val recipientsCol = it.getColumnIndex("recipient_ids")
 
             var count = 0
             while (it.moveToNext() && count < limit) {
@@ -142,8 +143,8 @@ class SmsSkill : SkillDefinition {
                 conversations.add(mapOf(
                     "conversation_id" to convId.toString(),
                     "snippet" to it.getString(snippetCol),
-                    "message_count" to it.getInt(countCol),
-                    "recipient_ids" to it.getString(recipientsCol)
+                    "message_count" to if (countCol >= 0) it.getInt(countCol) else 0,
+                    "recipient_ids" to if (recipientsCol >= 0) it.getString(recipientsCol) else ""
                 ))
                 count++
             }

@@ -25,12 +25,12 @@ import java.util.concurrent.ConcurrentHashMap
 class ReminderSkill : SkillDefinition {
 
     companion object {
-        private const val TAG = "ReminderSkill"
-        private const val CHANNEL_ID = "androidclaw_reminders"
-        private const val CHANNEL_NAME = "AndroidClaw 提醒"
-        private const val EXTRA_REMINDER_ID = "reminder_id"
-        private const val EXTRA_REMINDER_TITLE = "reminder_title"
-        private const val EXTRA_REMINDER_MESSAGE = "reminder_message"
+        const val TAG = "ReminderSkill"
+        const val CHANNEL_ID = "androidclaw_reminders"
+        const val CHANNEL_NAME = "AndroidClaw 提醒"
+        const val EXTRA_REMINDER_ID = "reminder_id"
+        const val EXTRA_REMINDER_TITLE = "reminder_title"
+        const val EXTRA_REMINDER_MESSAGE = "reminder_message"
 
         // 内存中的提醒列表（持久化方案可选择 DataStore/SharedPreferences）
         private val reminders = ConcurrentHashMap<String, ReminderData>()
@@ -337,20 +337,20 @@ class ReminderReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val reminderId = intent.getStringExtra(ReminderSkill.Companion.EXTRA_REMINDER_ID)
-        val title = intent.getStringExtra(ReminderSkill.Companion.EXTRA_REMINDER_TITLE)
-        val message = intent.getStringExtra(ReminderSkill.Companion.EXTRA_REMINDER_MESSAGE)
+        val reminderId = intent.getStringExtra(ReminderSkill.EXTRA_REMINDER_ID)
+        val title = intent.getStringExtra(ReminderSkill.EXTRA_REMINDER_TITLE)
+        val message = intent.getStringExtra(ReminderSkill.EXTRA_REMINDER_MESSAGE)
 
         Log.i(TAG, "Reminder triggered: id=$reminderId, title=$title")
 
         // 创建通知
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = ReminderSkill.Companion.CHANNEL_ID
+        val channelId = ReminderSkill.CHANNEL_ID
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                ReminderSkill.Companion.CHANNEL_NAME,
+                ReminderSkill.CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)

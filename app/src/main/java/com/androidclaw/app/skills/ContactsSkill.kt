@@ -467,10 +467,10 @@ class ContactsSkill : SkillDefinition {
     private fun getPhoneNumbers(resolver: ContentResolver, contactId: Long): List<Map<String, Any?>> {
         val phones = mutableListOf<Map<String, Any?>>()
         val cursor = resolver.query(
-            CommonDataKinds.Phone.CONTENT_URI,
+            ContactsContract.Data.CONTENT_URI,
             arrayOf(CommonDataKinds.Phone.NUMBER, CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.IS_PRIMARY),
-            "${CommonDataKinds.Phone.CONTACT_ID} = ?",
-            arrayOf(contactId.toString()),
+            "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?",
+            arrayOf(contactId.toString(), CommonDataKinds.Phone.CONTENT_ITEM_TYPE),
             null
         )
         cursor?.use {
@@ -480,9 +480,9 @@ class ContactsSkill : SkillDefinition {
 
             while (it.moveToNext()) {
                 phones.add(mapOf(
-                    "number" to it.getString(numCol),
-                    "type" to getPhoneTypeLabel(it.getInt(typeCol)),
-                    "primary" to (it.getInt(primaryCol) != 0)
+                    "number" to if (numCol >= 0) it.getString(numCol) else null,
+                    "type" to if (typeCol >= 0) getPhoneTypeLabel(it.getInt(typeCol)) else "unknown",
+                    "primary" to (if (primaryCol >= 0) it.getInt(primaryCol) else 0) != 0
                 ))
             }
         }
@@ -492,10 +492,10 @@ class ContactsSkill : SkillDefinition {
     private fun getEmailAddresses(resolver: ContentResolver, contactId: Long): List<Map<String, Any?>> {
         val emails = mutableListOf<Map<String, Any?>>()
         val cursor = resolver.query(
-            CommonDataKinds.Email.CONTENT_URI,
+            ContactsContract.Data.CONTENT_URI,
             arrayOf(CommonDataKinds.Email.DATA, CommonDataKinds.Email.TYPE),
-            "${CommonDataKinds.Email.CONTACT_ID} = ?",
-            arrayOf(contactId.toString()),
+            "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?",
+            arrayOf(contactId.toString(), CommonDataKinds.Email.CONTENT_ITEM_TYPE),
             null
         )
         cursor?.use {
@@ -504,8 +504,8 @@ class ContactsSkill : SkillDefinition {
 
             while (it.moveToNext()) {
                 emails.add(mapOf(
-                    "address" to it.getString(dataCol),
-                    "type" to getEmailTypeLabel(it.getInt(typeCol))
+                    "address" to if (dataCol >= 0) it.getString(dataCol) else null,
+                    "type" to if (typeCol >= 0) getEmailTypeLabel(it.getInt(typeCol)) else "unknown"
                 ))
             }
         }
@@ -515,10 +515,10 @@ class ContactsSkill : SkillDefinition {
     private fun getOrganizations(resolver: ContentResolver, contactId: Long): List<Map<String, Any?>> {
         val orgs = mutableListOf<Map<String, Any?>>()
         val cursor = resolver.query(
-            CommonDataKinds.Organization.CONTENT_URI,
+            ContactsContract.Data.CONTENT_URI,
             arrayOf(CommonDataKinds.Organization.COMPANY, CommonDataKinds.Organization.TITLE),
-            "${CommonDataKinds.Organization.CONTACT_ID} = ?",
-            arrayOf(contactId.toString()),
+            "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?",
+            arrayOf(contactId.toString(), CommonDataKinds.Organization.CONTENT_ITEM_TYPE),
             null
         )
         cursor?.use {
@@ -527,8 +527,8 @@ class ContactsSkill : SkillDefinition {
 
             while (it.moveToNext()) {
                 orgs.add(mapOf(
-                    "company" to it.getString(companyCol),
-                    "title" to it.getString(titleCol)
+                    "company" to if (companyCol >= 0) it.getString(companyCol) else null,
+                    "title" to if (titleCol >= 0) it.getString(titleCol) else null
                 ))
             }
         }
@@ -537,14 +537,17 @@ class ContactsSkill : SkillDefinition {
 
     private fun getNotes(resolver: ContentResolver, contactId: Long): String? {
         val cursor = resolver.query(
-            CommonDataKinds.Note.CONTENT_URI,
+            ContactsContract.Data.CONTENT_URI,
             arrayOf(CommonDataKinds.Note.NOTE),
-            "${CommonDataKinds.Note.CONTACT_ID} = ?",
-            arrayOf(contactId.toString()),
+            "${ContactsContract.Data.CONTACT_ID} = ? AND ${ContactsContract.Data.MIMETYPE} = ?",
+            arrayOf(contactId.toString(), CommonDataKinds.Note.CONTENT_ITEM_TYPE),
             null
         )
         return cursor?.use {
-            if (it.moveToFirst()) it.getString(0) else null
+            if (it.moveToFirst()) {
+                val noteCol = it.getColumnIndex(CommonDataKinds.Note.NOTE)
+                if (noteCol >= 0) it.getString(noteCol) else null
+            } else null
         }
     }
 

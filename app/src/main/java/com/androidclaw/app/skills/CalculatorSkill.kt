@@ -7,15 +7,13 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.lang.ref.WeakReference
 import java.net.URL
-import javax.script.ScriptEngineManager
-import javax.script.ScriptException
+import kotlin.math.*
 
 /**
  * 计算器/数学 Skill
  * 提供安全的数学表达式求值、单位转换和货币转换（可选联网）
- * 使用 javax.script.ScriptEngine 进行安全的表达式求值，禁止 eval 注入
+ * 使用自定义数学表达式解析器，避免使用 javax.script（Android 不支持）
  */
 class CalculatorSkill : SkillDefinition {
 
@@ -49,17 +47,6 @@ class CalculatorSkill : SkillDefinition {
             "qt" to 0.000946353, "pint" to 0.000473176
         )
 
-        // 允许的数学函数和常量
-        private val ALLOWED_FUNCTIONS = listOf(
-            "sin", "cos", "tan", "asin", "acos", "atan",
-            "sinh", "cosh", "tanh",
-            "sqrt", "cbrt",
-            "log", "log10", "log2",
-            "abs", "ceil", "floor", "round",
-            "min", "max", "pow",
-            "exp", "PI", "E"
-        )
-
         // 汇率缓存（可选的货币转换）
         private var exchangeRates: Map<String, Double>? = null
         private var lastRateUpdate: Long = 0
@@ -71,36 +58,18 @@ class CalculatorSkill : SkillDefinition {
     override val description: String = "数学计算、单位转换和货币转换"
     override val requiredPermissions: List<String> = emptyList()
 
-    private var scriptEngine: javax.script.ScriptEngine? = null
-
     override suspend fun initialize(context: Context) {
-        try {
-            val manager = ScriptEngineManager()
-            scriptEngine = manager.getEngineByName("rhino")
-            if (scriptEngine == null) {
-                // 降级：尝试使用 JavaScript 引擎
-                scriptEngine = manager.getEngineByName("js")
-            }
-            if (scriptEngine == null) {
-                Log.w(TAG, "No script engine available, using fallback arithmetic parser")
-            } else {
-                Log.i(TAG, "Script engine available: ${scriptEngine?.factory?.engineName}")
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "ScriptEngine not available", e)
-            scriptEngine = null
-        }
-        Log.i(TAG, "CalculatorSkill initialized")
+        Log.i(TAG, "CalculatorSkill initialized (using built-in math parser)")
     }
 
     override fun getTools(): List<ToolDefinition> = listOf(
         ToolDefinition(
             toolName = "calculate",
             displayName = "数学计算",
-            description = "安全的数学表达式求值，支持四则运算、三角函数、对数等",
+            description = "安全的数学表达式求值，支持四则运算、括号",
             parameters = listOf(
                 ToolParameter("expression", "string", true,
-                    "数学表达式，支持: + - * / ( ) 以及函数 sin/cos/tan/sqrt/log/abs 和常量 PI/E")
+                    "数学表达式，支持: + - * / ( ) 和小数")
             ),
             returnType = "number"
         ),
@@ -144,7 +113,7 @@ class CalculatorSkill : SkillDefinition {
 
     /**
      * 安全表达式求值
-     * 使用 ScriptEngine 而非 eval()，并限制可用函数
+     * 使用自定义数学表达式解析器
      */
     private fun calculate(params: Map<String, Any>): ToolResult {
         val expression = params["expression"] as? String
@@ -158,13 +127,10 @@ class CalculatorSkill : SkillDefinition {
         val dangerousPatterns = listOf(
             Regex("""(exec|eval|require|import|load|run|Runtime|Process|File)""", RegexOption.IGNORE_CASE),
             Regex("""['"]\s*\+\s*['"]"""), // 字符串拼接
-            Regex("""new\s+""", RegexOption.IGNORE_CASE), // 实例化对象
-            Regex("""this""", RegexOption.IGNORE_CASE), // this 引用
-            Regex("""\.\s*class"""), // 类访问
-            Regex("""getClass""", RegexOption.IGNORE_CASE),
-            Regex("""for\s*\(""", RegexOption.IGNORE_CASE), // for 循环
-            Regex("""while\s*\(""", RegexOption.IGNORE_CASE),
-            Regex("""function\s*\(""", RegexOption.IGNORE_CASE)
+            Regex("""new\s+""", RegexOption.IGNORE_CASE),
+            Regex("""this""", RegexOption.IGNORE_CASE),
+            Regex("""\.\s*class"""),
+            Regex("""getClass""", RegexOption.IGNORE_CASE)
         )
 
         for (pattern in dangerousPatterns) {
@@ -174,67 +140,16 @@ class CalculatorSkill : SkillDefinition {
             }
         }
 
-        val engine = scriptEngine
-        if (engine == null) {
-            // 降级：使用简单的算术解析器
-            return simpleArithmeticEval(expression)
-        }
-
         return try {
-            val result = engine.eval(expression)
-
-            when (result) {
-                is Number -> {
-                    val value = result.toDouble()
-                    ToolResult.Success(mapOf(
-                        "expression" to expression,
-                        "result" to value,
-                        "result_display" to formatNumber(value)
-                    ))
-                }
-                is Boolean -> {
-                    ToolResult.Success(mapOf(
-                        "expression" to expression,
-                        "result" to result
-                    ))
-                }
-                else -> ToolResult.Error("表达式结果类型不支持: ${result?.javaClass?.simpleName}")
-            }
-        } catch (e: ScriptException) {
-            Log.e(TAG, "Script evaluation error", e)
-            ToolResult.Error("表达式语法错误: ${e.message}")
-        }
-    }
-
-    /**
-     * 简单的四则运算解析器（ScriptEngine 不可用时降级使用）
-     */
-    private fun simpleArithmeticEval(expression: String): ToolResult {
-        return try {
-            // 只允许数字、四则运算、括号和小数点
-            val sanitized = expression.replace(Regex("\\s+"), "")
-            if (!sanitized.matches(Regex("^[\\d+\\-*/.()]+$"))) {
-                return ToolResult.Error("表达式包含不支持的运算符（ScriptEngine 不可用）")
-            }
-
-            // 使用 JavaScript 引擎作为备选
-            val jsEngine = ScriptEngineManager().getEngineByName("js")
-            if (jsEngine != null) {
-                val result = jsEngine.eval(expression)
-                if (result is Number) {
-                    ToolResult.Success(mapOf(
-                        "expression" to expression,
-                        "result" to result.toDouble(),
-                        "result_display" to formatNumber(result.toDouble())
-                    ))
-                } else {
-                    ToolResult.Error("表达式结果无效")
-                }
-            } else {
-                ToolResult.Error("计算引擎不可用")
-            }
+            val result = MathParser.evaluate(expression)
+            ToolResult.Success(mapOf(
+                "expression" to expression,
+                "result" to result,
+                "result_display" to formatNumber(result)
+            ))
         } catch (e: Exception) {
-            ToolResult.Error("计算错误: ${e.message}")
+            Log.e(TAG, "Math parsing error", e)
+            ToolResult.Error("表达式语法错误: ${e.message}")
         }
     }
 
@@ -455,8 +370,98 @@ class CalculatorSkill : SkillDefinition {
     }
 
     override fun release() {
-        scriptEngine = null
         exchangeRates = null
         Log.i(TAG, "CalculatorSkill released")
+    }
+
+    /**
+     * 简单数学表达式解析器（支持 + - * / 和括号）
+     */
+    object MathParser {
+        fun evaluate(expression: String): Double {
+            val tokens = tokenize(expression.replace(" ", ""))
+            val rpn = infixToRPN(tokens)
+            return evaluateRPN(rpn)
+        }
+
+        private fun tokenize(expr: String): List<String> {
+            val tokens = mutableListOf<String>()
+            var i = 0
+            while (i < expr.length) {
+                when (val c = expr[i]) {
+                    in '0'..'9', '.' -> {
+                        val sb = StringBuilder()
+                        while (i < expr.length && (expr[i].isDigit() || expr[i] == '.')) {
+                            sb.append(expr[i])
+                            i++
+                        }
+                        tokens.add(sb.toString())
+                        continue
+                    }
+                    '+', '-', '*', '/', '(', ')' -> {
+                        tokens.add(c.toString())
+                    }
+                    else -> throw IllegalArgumentException("非法字符: $c")
+                }
+                i++
+            }
+            return tokens
+        }
+
+        private fun infixToRPN(tokens: List<String>): List<String> {
+            val output = mutableListOf<String>()
+            val operators = ArrayDeque<String>()
+            
+            for (token in tokens) {
+                when {
+                    token.matches(Regex("""^-?\d+(\.\d+)?$""")) -> output.add(token)
+                    token == "(" -> operators.addLast(token)
+                    token == ")" -> {
+                        while (operators.isNotEmpty() && operators.last() != "(") {
+                            output.add(operators.removeLast())
+                        }
+                        if (operators.isNotEmpty()) operators.removeLast()
+                    }
+                    token in setOf("+", "-", "*", "/") -> {
+                        while (operators.isNotEmpty() && precedence(operators.last()) >= precedence(token)) {
+                            output.add(operators.removeLast())
+                        }
+                        operators.addLast(token)
+                    }
+                }
+            }
+            while (operators.isNotEmpty()) {
+                output.add(operators.removeLast())
+            }
+            return output
+        }
+
+        private fun precedence(op: String): Int = when (op) {
+            "+", "-" -> 1
+            "*", "/" -> 2
+            else -> 0
+        }
+
+        private fun evaluateRPN(rpn: List<String>): Double {
+            val stack = ArrayDeque<Double>()
+            for (token in rpn) {
+                when {
+                    token.matches(Regex("""^-?\d+(\.\d+)?$""")) -> stack.addLast(token.toDouble())
+                    token in setOf("+", "-", "*", "/") -> {
+                        val b = stack.removeLast()
+                        val a = stack.removeLast()
+                        val result = when (token) {
+                            "+" -> a + b
+                            "-" -> a - b
+                            "*" -> a * b
+                            "/" -> a / b
+                            else -> 0.0
+                        }
+                        stack.addLast(result)
+                    }
+                }
+            }
+            return stack.last()
+        }
     }
 }

@@ -18,7 +18,8 @@ class ShareSkill : SkillDefinition {
 
     companion object {
         private const val TAG = "ShareSkill"
-        private const val FILE_PROVIDER_AUTHORITY = "${BuildConfig.APPLICATION_ID}.fileprovider"
+        // FILE_PROVIDER_AUTHORITY 模板，运行时通过 context.packageName 替换
+        private const val FILE_PROVIDER_SUFFIX = ".fileprovider"
 
         // 支持的文件类型
         private val IMAGE_EXTENSIONS = setOf("jpg", "jpeg", "png", "gif", "webp", "bmp")
@@ -196,14 +197,11 @@ class ShareSkill : SkillDefinition {
         val file = File(uriOrPath)
         if (file.exists() && file.isFile) {
             return try {
-                FileProvider.getUriForFile(
-                    context,
-                    FILE_PROVIDER_AUTHORITY,
-                    file
-                )
+                val authority = context.packageName + FILE_PROVIDER_SUFFIX
+                FileProvider.getUriForFile(context, authority, file)
             } catch (e: IllegalArgumentException) {
                 Log.e(TAG, "FileProvider not configured for path: $uriOrPath", e)
-                // 降级使用 file:// URI
+                // 降级使用 file:// URI (不推荐，但作为后备)
                 Uri.fromFile(file)
             }
         }

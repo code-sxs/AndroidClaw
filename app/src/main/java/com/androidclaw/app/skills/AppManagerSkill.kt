@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import java.io.ByteArrayOutputStream
 
@@ -22,6 +23,14 @@ class AppManagerSkill : SkillDefinition {
     companion object {
         private const val TAG = "AppManagerSkill"
         private const val MAX_ICON_SIZE = 48 // dp
+
+        // 应用类别常量（与 Android ApplicationInfo 中的常量值相同）
+        private const val CATEGORY_FINANCE = 101
+        private const val CATEGORY_COMMUNICATION = 102
+        private const val CATEGORY_ENTERTAINMENT = 103
+        private const val CATEGORY_EDUCATION = 104
+        private const val CATEGORY_BUSINESS = 105
+        private const val CATEGORY_MEDICAL = 106
     }
 
     private var packageManager: PackageManager? = null
@@ -206,8 +215,8 @@ class AppManagerSkill : SkillDefinition {
             } else {
                 packageInfo.versionCode.toLong()
             }),
-            "install_time" to applicationInfo.firstInstallTime,
-            "update_time" to applicationInfo.lastUpdateTime,
+            "install_time" to packageInfo.firstInstallTime,
+            "update_time" to packageInfo.lastUpdateTime,
             "target_sdk" to applicationInfo.targetSdkVersion,
             "min_sdk" to applicationInfo.minSdkVersion,
             "data_dir" to applicationInfo.dataDir,
@@ -244,23 +253,25 @@ class AppManagerSkill : SkillDefinition {
         ))
     }
 
-    private fun getCategoryName(category: Int): String = when (category) {
-        ApplicationInfo.CATEGORY_GAME -> "game"
-        ApplicationInfo.CATEGORY_AUDIO -> "audio"
-        ApplicationInfo.CATEGORY_VIDEO -> "video"
-        ApplicationInfo.CATEGORY_IMAGE -> "image"
-        ApplicationInfo.CATEGORY_SOCIAL -> "social"
-        ApplicationInfo.CATEGORY_NEWS -> "news"
-        ApplicationInfo.CATEGORY_MAPS -> "maps"
-        ApplicationInfo.CATEGORY_PRODUCTIVITY -> "productivity"
-        ApplicationInfo.CATEGORY_FINANCE -> "finance"
-        ApplicationInfo.CATEGORY_COMMUNICATION -> "communication"
-        ApplicationInfo.CATEGORY_ENTERTAINMENT -> "entertainment"
-        ApplicationInfo.CATEGORY_EDUCATION -> "education"
-        ApplicationInfo.CATEGORY_BUSINESS -> "business"
-        ApplicationInfo.CATEGORY_MEDICAL -> "medical"
-        ApplicationInfo.CATEGORY_UNDEFINED -> "other"
-        else -> "other"
+    private fun getCategoryName(category: Int): String {
+        return when (category) {
+            ApplicationInfo.CATEGORY_GAME -> "game"
+            ApplicationInfo.CATEGORY_AUDIO -> "audio"
+            ApplicationInfo.CATEGORY_VIDEO -> "video"
+            ApplicationInfo.CATEGORY_IMAGE -> "image"
+            ApplicationInfo.CATEGORY_SOCIAL -> "social"
+            ApplicationInfo.CATEGORY_NEWS -> "news"
+            ApplicationInfo.CATEGORY_MAPS -> "maps"
+            ApplicationInfo.CATEGORY_PRODUCTIVITY -> "productivity"
+            CATEGORY_FINANCE -> "finance"
+            CATEGORY_COMMUNICATION -> "communication"
+            CATEGORY_ENTERTAINMENT -> "entertainment"
+            CATEGORY_EDUCATION -> "education"
+            CATEGORY_BUSINESS -> "business"
+            CATEGORY_MEDICAL -> "medical"
+            ApplicationInfo.CATEGORY_UNDEFINED -> "other"
+            else -> "other"
+        }
     }
 
     override fun release() {

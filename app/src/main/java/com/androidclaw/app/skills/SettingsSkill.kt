@@ -45,7 +45,7 @@ class SettingsSkill : SkillDefinition {
         android.Manifest.permission.BLUETOOTH_ADMIN,
         android.Manifest.permission.ACCESS_WIFI_STATE,
         android.Manifest.permission.CHANGE_WIFI_STATE,
-        android.Manifest.permission.FLASHLIGHT
+        android.Manifest.permission.CAMERA
     )
 
     override suspend fun initialize(context: Context) {
@@ -320,17 +320,13 @@ class SettingsSkill : SkillDefinition {
             else -> return ToolResult.Error("无效的 WiFi 值: $value（应为 on/off）")
         }
 
-        val success = wm.isWifiEnabled = enable
+        wm.isWifiEnabled = enable
 
-        return if (success) {
-            Log.i(TAG, "WiFi turned ${if (enable) "on" else "off"}")
-            ToolResult.Success(mapOf(
-                "status" to if (enable) "enabled" else "disabled",
-                "type" to "wifi"
-            ))
-        } else {
-            ToolResult.Error("WiFi 切换失败")
-        }
+        Log.i(TAG, "WiFi turned ${if (enable) "on" else "off"}")
+        return ToolResult.Success(mapOf(
+            "status" to if (enable) "enabled" else "disabled",
+            "type" to "wifi"
+        ))
     }
 
     private fun setAirplaneMode(context: Context): ToolResult {

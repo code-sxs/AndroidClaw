@@ -250,7 +250,7 @@ class CalendarSkill : SkillDefinition {
             put(Events.DTSTART, startTime)
             put(Events.DTEND, endTime)
             put(Events.ALL_DAY, if (allDay) 1 else 0)
-            put(Events.EVENT_TIMEZONE, if (allDay) CalendarContract.EVENT_TIMEZONE_UTC else timezone)
+            put(Events.EVENT_TIMEZONE, if (allDay) "UTC" else timezone)
             description?.let { put(Events.DESCRIPTION, it) }
             location?.let { put(Events.EVENT_LOCATION, it) }
         }
@@ -281,11 +281,11 @@ class CalendarSkill : SkillDefinition {
 
         val values = ContentValues()
 
-        (params["title"] as? String)?.let { put(Events.TITLE, it) }
-        (params["description"] as? String)?.let { put(Events.DESCRIPTION, it) }
-        (params["location"] as? String)?.let { put(Events.EVENT_LOCATION, it) }
-        (params["start_time"] as? Number)?.toLong()?.let { put(Events.DTSTART, it) }
-        (params["end_time"] as? Number)?.toLong()?.let { put(Events.DTEND, it) }
+        (params["title"] as? String)?.let { values.put(Events.TITLE, it) }
+        (params["description"] as? String)?.let { values.put(Events.DESCRIPTION, it) }
+        (params["location"] as? String)?.let { values.put(Events.EVENT_LOCATION, it) }
+        (params["start_time"] as? Number)?.toLong()?.let { values.put(Events.DTSTART, it) }
+        (params["end_time"] as? Number)?.toLong()?.let { values.put(Events.DTEND, it) }
 
         if (values.size() == 0) {
             return ToolResult.Error("未提供任何要修改的字段")
@@ -295,9 +295,9 @@ class CalendarSkill : SkillDefinition {
 
         if (rowsUpdated > 0) {
             Log.i(TAG, "Updated event: id=$eventId")
-            ToolResult.Success(mapOf("event_id" to eventId, "rows_updated" to rowsUpdated, "status" to "updated"))
+            return ToolResult.Success(mapOf("event_id" to eventId, "rows_updated" to rowsUpdated, "status" to "updated"))
         } else {
-            ToolResult.Error("更新失败: 未修改任何行")
+            return ToolResult.Error("更新失败: 未修改任何行")
         }
     }
 
@@ -319,9 +319,9 @@ class CalendarSkill : SkillDefinition {
 
         if (rowsDeleted > 0) {
             Log.i(TAG, "Deleted event: id=$eventId")
-            ToolResult.Success(mapOf("event_id" to eventId, "rows_deleted" to rowsDeleted, "status" to "deleted"))
+            return ToolResult.Success(mapOf("event_id" to eventId, "rows_deleted" to rowsDeleted, "status" to "deleted"))
         } else {
-            ToolResult.Error("删除失败: 事件不存在或已被删除")
+            return ToolResult.Error("删除失败: 事件不存在或已被删除")
         }
     }
 

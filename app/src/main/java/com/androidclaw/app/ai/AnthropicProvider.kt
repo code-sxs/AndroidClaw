@@ -356,15 +356,22 @@ class AnthropicProvider(
                     .addHeader("anthropic-dangerous-direct-browser-access", "true")
                     .build()
 
+                var shouldRetryFlag = false
+                var errorCode = 0
                 httpClient.newCall(httpRequest).execute().use { response ->
                     if (shouldRetry(response)) {
-                        Log.w(TAG, "Attempt $attempt failed with ${response.code}, retrying")
-                        kotlinx.coroutines.delay(RETRY_DELAY_MS.getOrElse(attempt) { 8000L })
+                        errorCode = response.code
                         lastException = Exception("HTTP ${response.code}")
                         response.close()
-                        continue
+                        shouldRetryFlag = true
+                        return@use
                     }
                     return@withContext parse(response)
+                }
+                if (shouldRetryFlag) {
+                    Log.w(TAG, "Attempt $attempt failed with $errorCode, retrying")
+                    kotlinx.coroutines.delay(RETRY_DELAY_MS.getOrElse(attempt) { 8000L })
+                    continue
                 }
             } catch (e: Exception) {
                 lastException = e

@@ -8,21 +8,19 @@ import android.util.Log
 import com.androidclaw.app.llm.ModelDownloader
 import com.androidclaw.app.llm.model.InferenceState
 import com.androidclaw.app.llm.model.ModelConfig
+import com.google.mediapipe.tasks.core.OutputHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * MediaPipe LLM Inference API 引擎
- * 
+ *
  * 优势:
  * - Google 官方维护
  * - 支持 GPU 加速 (OpenCL / Vulkan)
  * - 支持 NPU 加速 (通过 NNAPI)
  * - 模型格式: .litertlm / .tflite
- * 
+ *
  * 参考:
  * - https://developers.google.com/mediapipe/solutions/genai/llm_inference
  * - https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference
@@ -31,13 +29,12 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
 
     companion object {
         private const val TAG = "MediaPipeEngine"
-        
+
         // 默认配置
         private const val DEFAULT_MAX_TOKENS = 1024
         private const val DEFAULT_TOP_K = 40
         private const val DEFAULT_TEMPERATURE = 0.7f
         private const val DEFAULT_TOP_P = 0.9f
-        private const val DEFAULT_LOOP_WAIT_TIME_MS = 50L
 
         /**
          * 检查是否支持指定模型
@@ -63,11 +60,14 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
 
     // MediaPipe LLM Inference API 对象
     private var llmInference: com.google.mediapipe.tasks.genai.llminference.LlmInference? = null
-    
+
     // 模型下载器
     private val modelDownloader: ModelDownloader by lazy {
         ModelDownloader.getInstance(context)
     }
+
+    // 流式生成回调（通过 LlmInferenceOptions 的 resultListener 传递）
+    private var streamingCallback: ((String) -> Unit)? = null
 
     override suspend fun initialize(modelConfig: ModelConfig): Boolean = withContext(Dispatchers.IO) {
         Log.i(TAG, "Initializing MediaPipe engine with model: ${modelConfig.modelName}")
@@ -91,23 +91,17 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
                 return@withContext false
             }
 
-            // 3. 配置 MediaPipe LLM Inference API
-            Log.d(TAG, "Creating LlmInferenceOptions...")
-            val options = com.google.mediapipe.tasks.genai.llminference.LlmInferenceOptions.builder()
-                .setModelPath(modelFile.absolutePath)
-                .setMaxTokens(DEFAULT_MAX_TOKENS)
-                .setTopK(DEFAULT_TOP_K)
-                .setTemperature(DEFAULT_TEMPERATURE)
-                .setTopP(DEFAULT_TOP_P)
-                .build()
-
-            Log.d(TAG, "LlmInferenceOptions created: maxTokens=$DEFAULT_MAX_TOKENS, topK=$DEFAULT_TOP_K, temperature=$DEFAULT_TEMPERATURE")
-
-            // 4. 创建 LLM Inference 实例
+            // 3. 配置并创建 LLM Inference 实例
+            // 注意: LlmInferenceOptions 是 LlmInference 的嵌套类 (LlmInference.LlmInferenceOptions)
             Log.d(TAG, "Creating LlmInference instance...")
             llmInference = com.google.mediapipe.tasks.genai.llminference.LlmInference.createFromOptions(
                 context,
-                options
+                com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOptions.builder()
+                    .setModelPath(modelFile.absolutePath)
+                    .setMaxTokens(DEFAULT_MAX_TOKENS)
+                    .setTopK(DEFAULT_TOP_K)
+                    .setTemperature(DEFAULT_TEMPERATURE)
+                    .build()
             )
 
             if (llmInference == null) {
@@ -139,15 +133,15 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
         try {
             Log.d(TAG, "Generating text with prompt length: ${prompt.length}")
             Log.v(TAG, "Prompt: $prompt")
-            
+
             val startTime = System.currentTimeMillis()
             val response = llmInference?.generateResponse(prompt) ?: ""
             val endTime = System.currentTimeMillis()
-            
+
             Log.d(TAG, "Generated response length: ${response.length}")
             Log.d(TAG, "Generation time: ${endTime - startTime} ms")
             Log.v(TAG, "Response: $response")
-            
+
             response
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate text", e)
@@ -167,42 +161,54 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
         try {
             Log.d(TAG, "Generating text stream with prompt length: ${prompt.length}")
             Log.v(TAG, "Prompt: $prompt")
-            
+
             val startTime = System.currentTimeMillis()
-            val stringBuilder = StringBuilder()
-            
-            // MediaPipe 支持流式生成
-            // 注意: generateResponseAsync 的回调参数是 (String) -> Unit
-            Log.d(TAG, "Starting streaming generation...")
-            
-            suspendCancellableCoroutine<Unit> { continuation ->
+
+            // MediaPipe Tasks GenAI 0.10.x 流式生成通过 LlmInferenceOptions.resultListener 实现
+            // 需要重新创建 LlmInference 实例并传入 resultListener
+            val modelPath = llmInference?.let {
+                // 从当前实例获取模型路径 (反射获取 modelPath 字段)
                 try {
-                    llmInference?.generateResponseAsync(prompt) { partialResult ->
-                        Log.v(TAG, "Partial result received: $partialResult")
-                        stringBuilder.append(partialResult)
-                        onToken(partialResult)
-                    }
-                    
-                    // 等待生成完成 (MediaPipe 的 generateResponseAsync 是异步的)
-                    // 注意: 实际实现可能需要根据不同的 MediaPipe 版本调整
-                    // 这里假设 generateResponseAsync 是同步阻塞的
-                    
-                    if (!continuation.isCancelled) {
-                        continuation.resume(Unit)
-                    }
+                    val field = it.javaClass.getDeclaredField("modelPath")
+                    field.isAccessible = true
+                    field.get(it) as String
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error in streaming generation", e)
-                    if (!continuation.isCancelled) {
-                        continuation.resumeWithException(e)
-                    }
+                    Log.e(TAG, "Cannot get modelPath from existing instance", e)
+                    null
                 }
             }
-            
+
+            if (modelPath == null) {
+                Log.e(TAG, "Cannot determine model path for streaming")
+                return@withContext
+            }
+
+            // 通过 resultListener 接收流式部分结果
+            val resultListener = OutputHandler.ProgressListener<String> { partialResult, isLast ->
+                Log.v(TAG, "Partial result received: $partialResult (isLast=$isLast)")
+                onToken(partialResult)
+            }
+
+            val streamingOptions = com.google.mediapipe.tasks.genai.llminference.LlmInference.LlmInferenceOptions.builder()
+                .setModelPath(modelPath)
+                .setMaxTokens(DEFAULT_MAX_TOKENS)
+                .setTopK(DEFAULT_TOP_K)
+                .setTemperature(DEFAULT_TEMPERATURE)
+                .setResultListener(resultListener)
+                .build()
+
+            val streamingInference = com.google.mediapipe.tasks.genai.llminference.LlmInference.createFromOptions(context, streamingOptions)
+
+            if (streamingInference != null) {
+                streamingInference.generateResponseAsync(prompt)
+            } else {
+                Log.e(TAG, "Failed to create streaming inference instance")
+            }
+
             val endTime = System.currentTimeMillis()
-            Log.d(TAG, "Streaming generation completed")
-            Log.d(TAG, "Total response length: ${stringBuilder.length}")
-            Log.d(TAG, "Generation time: ${endTime - startTime} ms")
-            
+            Log.d(TAG, "Streaming generation initiated")
+            Log.d(TAG, "Setup time: ${endTime - startTime} ms")
+
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate text stream", e)
             Log.e(TAG, "Error type: ${e.javaClass.simpleName}")
@@ -261,7 +267,7 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
      */
     suspend fun testModelLoading(modelConfig: ModelConfig): Boolean = withContext(Dispatchers.IO) {
         Log.i(TAG, "Testing model loading for: ${modelConfig.modelName}")
-        
+
         // 1. 检查模型文件
         val modelFile = modelDownloader.getDownloadedModel(modelConfig)
         if (modelFile == null) {
@@ -298,7 +304,7 @@ class MediaPipeEngine(context: Context) : BaseEngine(context) {
         // 5. 释放资源
         release()
         Log.d(TAG, "Test passed: Resource release successful")
-        
+
         Log.i(TAG, "All tests passed for model: ${modelConfig.modelName}")
         true
     }

@@ -75,11 +75,9 @@ class PlanExecutor(private val context: Context) {
         isCancelled = false
 
         var success = true
-        val mutablePlan = plan.copy(
-            steps = plan.steps.toMutableList()
-        )
+        val mutableSteps = plan.steps.toMutableList()
 
-        for ((index, step) in mutablePlan.steps.withIndex()) {
+        for ((index, step) in mutableSteps.withIndex()) {
             // 检查是否已取消
             if (isCancelled) {
                 Log.i(TAG, "Plan cancelled at step $index")
@@ -92,14 +90,14 @@ class PlanExecutor(private val context: Context) {
 
             // 更新步骤状态为运行中
             val runningStep = step.copy(status = StepStatus.RUNNING)
-            mutablePlan.steps[index] = runningStep
+            mutableSteps[index] = runningStep
             onStepUpdate?.invoke(runningStep)
             emit(PlanExecutionEvent.StepStarted(index, runningStep))
 
             // 需要用户确认
             if (step.toolName != null && confirmationCallback != null) {
                 val waitingStep = runningStep.copy(status = StepStatus.WAITING_CONFIRMATION)
-                mutablePlan.steps[index] = waitingStep
+                mutableSteps[index] = waitingStep
                 emit(PlanExecutionEvent.WaitingConfirmation(index, waitingStep))
 
                 val confirmation = try {
@@ -113,7 +111,7 @@ class PlanExecutor(private val context: Context) {
                     is UserConfirmationResult.Cancel -> {
                         Log.i(TAG, "User cancelled plan at step $index")
                         val cancelledStep = runningStep.copy(status = StepStatus.CANCELLED)
-                        mutablePlan.steps[index] = cancelledStep
+                        mutableSteps[index] = cancelledStep
                         emit(PlanExecutionEvent.StepFailed(index, "Cancelled by user"))
                         emit(PlanExecutionEvent.PlanCompleted(false, "Cancelled at step ${index + 1}"))
                         return@flow
@@ -124,7 +122,7 @@ class PlanExecutor(private val context: Context) {
                             status = StepStatus.COMPLETED,
                             result = "Skipped by user"
                         )
-                        mutablePlan.steps[index] = skippedStep
+                        mutableSteps[index] = skippedStep
                         emit(PlanExecutionEvent.StepCompleted(index, "Skipped"))
                         emit(PlanExecutionEvent.ProgressUpdate(index + 1, plan.steps.size))
                         continue
@@ -132,7 +130,7 @@ class PlanExecutor(private val context: Context) {
                     is UserConfirmationResult.Approved -> {
                         // 继续执行
                         val approvedStep = runningStep.copy(status = StepStatus.RUNNING)
-                        mutablePlan.steps[index] = approvedStep
+                        mutableSteps[index] = approvedStep
                     }
                 }
             }
@@ -144,7 +142,7 @@ class PlanExecutor(private val context: Context) {
                     status = StepStatus.COMPLETED,
                     result = result
                 )
-                mutablePlan.steps[index] = completedStep
+                mutableSteps[index] = completedStep
                 onStepUpdate?.invoke(completedStep)
                 emit(PlanExecutionEvent.StepCompleted(index, result))
 
@@ -158,7 +156,7 @@ class PlanExecutor(private val context: Context) {
                     status = StepStatus.FAILED,
                     error = e.message ?: "Unknown error"
                 )
-                mutablePlan.steps[index] = failedStep
+                mutableSteps[index] = failedStep
                 onStepUpdate?.invoke(failedStep)
                 emit(PlanExecutionEvent.StepFailed(index, e.message ?: "Unknown error"))
 

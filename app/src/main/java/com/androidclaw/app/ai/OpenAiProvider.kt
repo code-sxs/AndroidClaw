@@ -21,7 +21,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
-import okhttp3.sse.OkHttpSseClient
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
 
@@ -132,7 +131,7 @@ class OpenAiProvider(
         .retryOnConnectionFailure(false) // 自定义重试
         .build()
 
-    private val sseClient by lazy { OkHttpSseClient(httpClient) }
+    // SSE 直接使用 httpClient，不需要单独的 SSE 客户端
 
     // ─────────────────────────────────────────────────────────────────────────
     // AiProvider 实现
@@ -170,7 +169,7 @@ class OpenAiProvider(
             var collected = ""
 
             try {
-                sseClient.newCall(request).execute().use { response ->
+                httpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) {
                         handleApiError(response)
                     }
@@ -185,7 +184,7 @@ class OpenAiProvider(
 
                                 try {
                                     val chunk = gson.fromJson(data, OpenAiStreamResponse::class.java)
-                                    val token = chunk.choices?.firstOrNull()?.delta?.content
+                                    val token = chunk.choices?.firstOrNull()?.delta?.content as? String
                                     if (!token.isNullOrBlank()) {
                                         emit(token)
                                         collected += token
@@ -296,7 +295,7 @@ class OpenAiProvider(
         prompt: String,
         history: List<Message>,
         stream: Boolean
-    ): Request.Builder {
+    ): Request {
         val messages = buildMessages(prompt, history)
         val body = mutableMapOf<String, Any>(
             "model" to model,
@@ -312,6 +311,7 @@ class OpenAiProvider(
             .post(gson.toJson(body).toRequestBody(JSON))
             .addHeader("Content-Type", "application/json")
             .addHeader("Authorization", "Bearer $apiKey")
+            .build()
     }
 
     private fun buildChatRequestJson(prompt: String, history: List<Message>, stream: Boolean): String {
@@ -341,23 +341,28 @@ class OpenAiProvider(
      * 带重试的请求执行
      */
     private suspend fun <T> executeWithRetry(
-        requestBuilder: Request.Builder,
+        request: Request,
         parse: suspend (Response) -> T
     ): T = withContext(Dispatchers.IO) {
         var lastException: Exception? = null
         for (attempt in 0 until MAX_RETRIES) {
             try {
-                val request = requestBuilder.build()
+                var shouldRetryFlag = false
+                var errorCode = 0
                 httpClient.newCall(request).execute().use { response ->
-                    // 检查是否需要重试
                     if (shouldRetry(response)) {
-                        Log.w(TAG, "Attempt $attempt failed with ${response.code}, retrying in ${RETRY_DELAY_MS[attempt]}ms")
-                        kotlinx.coroutines.delay(RETRY_DELAY_MS.getOrElse(attempt) { 8000L })
+                        errorCode = response.code
                         lastException = Exception("HTTP ${response.code}")
                         response.close()
-                        continue
+                        shouldRetryFlag = true
+                        return@use
                     }
                     return@withContext parse(response)
+                }
+                if (shouldRetryFlag) {
+                    Log.w(TAG, "Attempt $attempt failed with $errorCode, retrying in ${RETRY_DELAY_MS[attempt]}ms")
+                    kotlinx.coroutines.delay(RETRY_DELAY_MS.getOrElse(attempt) { 8000L })
+                    continue
                 }
             } catch (e: Exception) {
                 lastException = e

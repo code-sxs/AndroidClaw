@@ -251,17 +251,18 @@ class LLMManager private constructor(private val context: Context) {
         // 优先使用 AI 提供商
         if (useAiProvider && aiProvider != null) {
             Log.d(TAG, "Using AI provider for text generation")
-            return try {
+            val result: String = try {
                 aiProvider!!.generateText(prompt, emptyList())
             } catch (e: Exception) {
                 Log.e(TAG, "AI provider failed, falling back to local model", e)
                 // 降级到本地模型
                 generateTextLocal(prompt)
             }
+            return@withContext result
         }
 
         // 使用本地模型
-        return generateTextLocal(prompt)
+        generateTextLocal(prompt)
     }
 
     /**

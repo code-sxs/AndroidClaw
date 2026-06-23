@@ -5,7 +5,6 @@
 package com.androidclaw.app.skills
 
 import android.content.Context
-import com.androidclaw.app.agent.ToolResult
 
 /**
  * Skill 接口

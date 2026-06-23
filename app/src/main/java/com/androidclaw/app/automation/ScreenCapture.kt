@@ -155,8 +155,11 @@ class ScreenCapture(
         }
 
         try {
+            // 将 image 复制到局部不可变变量，避免 smart cast 错误
+            val imageToProcess = image ?: return null
+            
             // 转换为 Bitmap
-            val planes = image.planes
+            val planes = imageToProcess.planes
             val buffer = planes[0].buffer
             val pixelStride = planes[0].pixelStride
             val rowStride = planes[0].rowStride
@@ -181,7 +184,7 @@ class ScreenCapture(
             }
 
             Log.d(TAG, "Screenshot captured: ${croppedBitmap.width}x${croppedBitmap.height}")
-            croppedBitmap
+            return croppedBitmap
 
         } finally {
             image?.close()

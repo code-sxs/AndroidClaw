@@ -6,7 +6,7 @@ package com.androidclaw.app.mcp
 
 import android.content.Context
 import android.util.Log
-import com.androidclaw.app.agent.ToolResult
+import com.androidclaw.app.skills.ToolResult
 import com.androidclaw.app.skills.SecurityProfile
 import com.androidclaw.app.skills.SkillDefinition
 import com.androidclaw.app.skills.ToolDefinition

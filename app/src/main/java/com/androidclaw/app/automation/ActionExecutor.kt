@@ -40,7 +40,7 @@ class ActionExecutor(
      * 执行动作
      */
     suspend fun execute(action: AutomationAction): ActionResult {
-        Log.i(TAG, "Executing action: ${action.type}")
+        Log.i(TAG, "Executing action: ${action::class.simpleName}")
 
         return try {
             withTimeout(action.timeout ?: DEFAULT_TIMEOUT_MS) {
@@ -60,7 +60,7 @@ class ActionExecutor(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Action failed: ${action.type}", e)
+            Log.e(TAG, "Action failed: ${action::class.simpleName}", e)
             ActionResult.Error(e.message ?: "Unknown error", e)
         }
     }
@@ -300,7 +300,7 @@ class ActionExecutor(
     /**
      * 带重试的执行
      */
-    private suspend fun <T> executeWithRetry(
+    private suspend fun executeWithRetry(
         retryCount: Int = DEFAULT_RETRY_COUNT,
         retryDelay: Long = DEFAULT_RETRY_DELAY_MS,
         block: suspend () -> ActionResult
@@ -510,7 +510,7 @@ sealed class AutomationAction {
 
     data class WaitFor(
         val text: String,
-        val timeout: Long? = null
+        override val timeout: Long? = null
     ) : AutomationAction()
 
     data class ReadScreen(

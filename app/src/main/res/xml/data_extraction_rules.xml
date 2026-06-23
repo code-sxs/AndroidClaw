@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- data_extraction_rules.xml -->
+<!-- Android 12+ 数据提取规则 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="." />
+        <exclude domain="database" path="okhttp.db" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="." />
+        <include domain="database" path="." />
+        <exclude domain="database" path="okhttp.db" />
+    </device-transfer>
+</data-extraction-rules>

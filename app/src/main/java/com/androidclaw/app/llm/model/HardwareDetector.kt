@@ -27,8 +27,8 @@ object HardwareDetector {
         val hasGPU = detectGPU()
         val hasNPU = detectNPU()
         val gpuRenderer = getGPURenderer()
-        val totalRAM = getTotalRAM()
-        val availableRAM = getAvailableRAM()
+        val totalRAM = getTotalRAM(context)
+        val availableRAM = getAvailableRAM(context)
         val androidVersion = Build.VERSION.SDK_INT
         val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "unknown"
 
@@ -107,7 +107,7 @@ object HardwareDetector {
     /**
      * 获取总 RAM
      */
-    private fun getTotalRAM(): Long {
+    private fun getTotalRAM(context: Context): Long {
         return try {
             val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
             val memoryInfo = android.app.ActivityManager.MemoryInfo()
@@ -122,7 +122,7 @@ object HardwareDetector {
     /**
      * 获取可用 RAM
      */
-    private fun getAvailableRAM(): Long {
+    private fun getAvailableRAM(context: Context): Long {
         return try {
             val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
             val memoryInfo = android.app.ActivityManager.MemoryInfo()

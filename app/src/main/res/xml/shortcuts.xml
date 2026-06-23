@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- shortcuts.xml -->
+<!-- App 快捷方式 (长按图标出现) -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 快速对话 -->
+    <shortcut
+        android:shortcutId="chat"
+        android:enabled="true"
+        android:icon="@drawable/ic_automation"
+        android:shortcutShortLabel="@string/shortcut_chat_short"
+        android:shortcutLongLabel="@string/shortcut_chat_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.androidclaw.app"
+            android:targetClass="com.androidclaw.app.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <!-- 自动化 -->
+    <shortcut
+        android:shortcutId="automation"
+        android:enabled="true"
+        android:icon="@drawable/ic_automation"
+        android:shortcutShortLabel="@string/shortcut_automation_short"
+        android:shortcutLongLabel="@string/shortcut_automation_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.androidclaw.app"
+            android:targetClass="com.androidclaw.app.MainActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+</shortcuts>

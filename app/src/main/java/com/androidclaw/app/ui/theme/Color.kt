@@ -3,6 +3,8 @@
 
 package com.androidclaw.app.ui.theme
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 // =============================================================================
@@ -23,7 +25,7 @@ object LiquidGlassColors {
     val OnSurfaceVariant = Color(0xFF6C757D)
     val Outline = Color(0xFFDEE2E6)
     val OutlineVariant = Color(0xFFE9ECEF)
-    
+
     // 深色模式
     val PrimaryDark = Color(0xFF8B85FF)
     val SecondaryDark = Color(0xFFFF8585)
@@ -36,7 +38,7 @@ object LiquidGlassColors {
     val OnSurfaceDark = Color(0xFFE9ECEF)
     val OnSurfaceVariantDark = Color(0xFFADB5BD)
     val OutlineDark = Color(0xFF495057)
-    
+
     // 渐变色
     val GradientPrimary = listOf(Color(0xFF6C63FF), Color(0xFFFF6B6B))
     val GradientSecondary = listOf(Color(0xFFFF6B6B), Color(0xFFFFAB76))
@@ -60,13 +62,13 @@ object MiuiColors {
     val OnSurface = Color(0xFF1A1A1A)
     val OnSurfaceVariant = Color(0xFF757575)
     val Outline = Color(0xFFE0E0E0)
-    
+
     // 深色模式
     val BackgroundDark = Color(0xFF121212)
     val SurfaceDark = Color(0xFF1E1E1E)
     val OnBackgroundDark = Color(0xFFE0E0E0)
     val OnSurfaceDark = Color(0xFFE0E0E0)
-    
+
     // 渐变色
     val GradientPrimary = listOf(Color(0xFFFF6700), Color(0xFFFF9500))
     val GradientSecondary = listOf(Color(0xFF333333), Color(0xFF4A4A4A))
@@ -90,7 +92,7 @@ object IosColors {
     val OnSurfaceVariant = Color(0xFF8E8E93)
     val Outline = Color(0xFFC7C7CC)
     val Fill = Color(0x33787880)
-    
+
     // 深色模式
     val BackgroundDark = Color(0xFF000000)
     val SurfaceDark = Color(0xFF1C1C1E)
@@ -98,7 +100,7 @@ object IosColors {
     val OnBackgroundDark = Color(0xFFFFFFFF)
     val OnSurfaceDark = Color(0xFFFFFFFF)
     val FillDark = Color(0x33F2F2F7)
-    
+
     // 渐变色
     val GradientPrimary = listOf(Color(0xFF007AFF), Color(0xFF5856D6))
     val GradientSecondary = listOf(Color(0xFF34C759), Color(0xFF00C7BE))
@@ -114,22 +116,22 @@ object AppColors {
     val Warning = Color(0xFFFF9500)
     val Error = Color(0xFFFF3B30)
     val Info = Color(0xFF007AFF)
-    
+
     // 毛玻璃
     val GlassWhite = Color(0xF0FFFFFF)
     val GlassDark = Color(0xF01E1E1E)
     val GlassBorder = Color(0x80FFFFFF)
     val GlassBorderDark = Color(0x802D2D3A)
-    
+
     // 阴影
     val ShadowLight = Color(0x1A000000)
     val ShadowMedium = Color(0x33000000)
-    
+
     // 消息气泡
     val UserBubbleStart = Color(0xFF6C63FF)
     val UserBubbleEnd = Color(0xFFFF6B6B)
     val AiBubbleBackground = Color(0xFFF0F0F5)
-    
+
     // 渐变色
     val BluePurple = listOf(Color(0xFF007AFF), Color(0xFF5856D6))
     val Sunset = listOf(Color(0xFFFF6B6B), Color(0xFFFFAB76))
@@ -140,12 +142,6 @@ object AppColors {
 // =============================================================================
 // 渐变画笔扩展
 // =============================================================================
-package com.androidclaw.app.ui.theme
-
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-
 fun Brush.primaryGradient(): Brush = Brush.linearGradient(
     colors = LiquidGlassColors.GradientPrimary,
     start = Offset(0f, 0f),

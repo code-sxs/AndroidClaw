@@ -138,7 +138,7 @@ class WeatherSkill : SkillDefinition {
             description = "获取指定位置的当前天气（温度、湿度、风速、天气状况等）",
             parameters = listOf(
                 ToolParameter("location", "string", false,
-                    "位置：城市名称（如 beijing/tokyo/newyork）或经纬度"com:lat,lng"格式，不填则使用设备位置")
+                    "位置：城市名称（如 beijing/tokyo/newyork）或经纬度 \"com:lat,lng\" 格式，不填则使用设备位置")
             ),
             returnType = "map"
         ),

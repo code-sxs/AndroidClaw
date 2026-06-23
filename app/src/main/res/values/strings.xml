@@ -5,6 +5,12 @@
     <!-- 应用名称 -->
     <string name="app_name">AndroidClaw</string>
 
+    <!-- Shortcuts -->
+    <string name="shortcut_chat_short">对话</string>
+    <string name="shortcut_chat_long">快速对话</string>
+    <string name="shortcut_automation_short">自动化</string>
+    <string name="shortcut_automation_long">启动自动化</string>
+
     <!-- 自动化服务 -->
     <string name="automation_service_description">
         AndroidClaw 跨应用自动化服务，允许 AI 助手帮您操作其他应用。

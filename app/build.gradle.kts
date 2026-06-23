@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
+    id("kotlin-parcelize")
 }
 
 android {
@@ -53,7 +54,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.6.0"
+        kotlinCompilerExtensionVersion = "1.5.9"
     }
 
     packaging {
@@ -98,6 +99,7 @@ dependencies {
 
     // 网络 (模型下载 + MCP Client + 远程推理)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp-sse:4.12.0")
     implementation("com.squareup.okio:okio:3.6.0")
     
     // Retrofit (HTTP API 调用)
@@ -124,8 +126,8 @@ dependencies {
     // 图片加载
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    // Markdown 渲染
-    implementation("com.mikepenz:markdown-compose:2.3.1")
+    // Markdown 渲染 (暂时注释，仓库中找不到该版本)
+    // implementation("com.mikepenz:markdown-compose:2.3.1")
 
     // 权限请求
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")

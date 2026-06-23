@@ -13,6 +13,7 @@ import com.androidclaw.app.llm.engine.MediaPipeEngine
 import com.androidclaw.app.llm.engine.MLCEngine
 import com.androidclaw.app.llm.engine.LiteRTEngine
 import com.androidclaw.app.llm.model.HardwareCapability
+import com.androidclaw.app.llm.model.HardwareDetector
 import com.androidclaw.app.llm.model.InferenceEngine
 import com.androidclaw.app.llm.model.ModelConfig
 import kotlinx.coroutines.Dispatchers

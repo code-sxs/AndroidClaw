@@ -138,10 +138,10 @@ $toolsList
     private fun generateToolMethod(tool: ToolSpec): String {
         val params = tool.parameters.joinToString(", ") { param ->
             val paramRef = when (param.type) {
-                "string" -> "params[\"${param.name}\"] as? String${if (param.required) ?: return@joinToString "\"\""}"
-                "int" -> "(params[\"${param.name}\"] as? Number)?.toInt()${if (param.required) ?: 0}"
-                "boolean" -> "params[\"${param.name}\"] as? Boolean${if (param.required) ?: false}"
-                "float" -> "(params[\"${param.name}\"] as? Number)?.toFloat()${if (param.required) ?: 0f}"
+                "string" -> "params[\"${param.name}\"] as? String ?: \"\""
+                "int" -> "(params[\"${param.name}\"] as? Number)?.toInt() ?: 0"
+                "boolean" -> "params[\"${param.name}\"] as? Boolean ?: false"
+                "float" -> "(params[\"${param.name}\"] as? Number)?.toFloat() ?: 0f"
                 else -> "params[\"${param.name}\"]"
             }
             paramRef
@@ -181,7 +181,7 @@ $toolsList
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 connection.inputStream.bufferedReader().use { it.readText() }
             } else {
-                throw IOException("HTTP error: $responseCode")
+                throw IOException("HTTP error: \$responseCode")
             }
         } finally {
             connection.disconnect()
@@ -215,7 +215,7 @@ $toolsList
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 connection.inputStream.bufferedReader().use { it.readText() }
             } else {
-                throw IOException("HTTP error: $responseCode")
+                throw IOException("HTTP error: \$responseCode")
             }
         } finally {
             connection.disconnect()
@@ -275,7 +275,7 @@ $toolsList
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to read file: $filePath", e)
+            Log.e(TAG, "Failed to read file: \$filePath", e)
             null
         }
     }
@@ -297,7 +297,7 @@ $toolsList
             file.writeText(content)
             true
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to write file: $filePath", e)
+            Log.e(TAG, "Failed to write file: \$filePath", e)
             false
         }
     }
@@ -312,7 +312,7 @@ $toolsList
      */
     private fun savePreference(key: String, value: Any) {
         val context = this.context ?: return
-        val prefs = context.getSharedPreferences("${'$'}{skillName}_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("\${skillName}_prefs", Context.MODE_PRIVATE)
         
         prefs.edit().apply {
             when (value) {
@@ -331,7 +331,7 @@ $toolsList
      */
     private fun <T> getPreference(key: String, defaultValue: T): T {
         val context = this.context ?: return defaultValue
-        val prefs = context.getSharedPreferences("${'$'}{skillName}_prefs", Context.MODE_PRIVATE)
+        val prefs = context.getSharedPreferences("\${skillName}_prefs", Context.MODE_PRIVATE)
         
         @Suppress("UNCHECKED_CAST")
         return when (defaultValue) {

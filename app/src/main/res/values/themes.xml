@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- themes.xml -->
+<!-- AndroidClaw 应用主题 -->
+<resources>
+
+    <!-- Base theme -->
+    <style name="Theme.AndroidClaw" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Primary color -->
+        <item name="android:colorPrimary">@color/purple_500</item>
+        <item name="android:colorPrimaryDark">@color/purple_700</item>
+        <item name="android:colorAccent">@color/teal_200</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/purple_500</item>
+        <!-- Background -->
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+</resources>

@@ -36,6 +36,8 @@ class AgentManager private constructor(private val context: Context) {
                 INSTANCE ?: AgentManager(context.applicationContext).also { INSTANCE = it }
             }
         }
+
+        private const val DEFAULT_SYSTEM_PROMPT = "You are AndroidClaw, a helpful AI assistant running locally on Android. You can help users with various tasks using the available tools. Always be concise and helpful. If you don't know something, just say so."
     }
 
     // LLM 管理器
@@ -279,13 +281,4 @@ class AgentManager private constructor(private val context: Context) {
         val content: String,  // 消息内容
         val timestamp: Long = System.currentTimeMillis()
     )
-
-    companion object {
-        private const val DEFAULT_SYSTEM_PROMPT = """
-            You are AndroidClaw, a helpful AI assistant running locally on Android.
-            You can help users with various tasks using the available tools.
-            Always be concise and helpful.
-            If you don't know something, just say so.
-        """.trimIndent()
-    }
 }

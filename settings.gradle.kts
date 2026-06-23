@@ -22,8 +22,8 @@ dependencyResolutionManagement {
         mavenCentral()
         // MediaPipe 依赖
         maven { url = uri("https://mediapipe-releases.storage.googleapis.com/maven") }
-        // MLC-LLM 依赖
-        maven { url = uri("https://mlc.ai/mlc-llm/wheels/release") }
+        // MLC-LLM 依赖（需要时取消注释并使用正确 Maven 地址）
+        // maven { url = uri("https://repo.mlc.ai/maven") }
     }
 }
 

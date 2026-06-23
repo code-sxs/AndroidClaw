@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple claw/robot icon placeholder -->
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M54,24 C40,24 28,36 28,50 C28,60 34,68 44,72 L36,88 L44,88 L52,76 C54,76.7 56,77 58,77 C60,77 62,76.7 64,76 L72,88 L80,88 L72,72 C82,68 88,60 88,50 C88,36 76,24 62,24 Z" />
+    <!-- Left eye -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M44,46 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+    <!-- Right eye -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M64,46 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+</vector>

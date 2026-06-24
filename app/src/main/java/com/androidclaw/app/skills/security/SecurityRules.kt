@@ -22,6 +22,32 @@ class SecurityRules {
 
     companion object {
         private const val TAG = "SecurityRules"
+
+        private val DANGEROUS_API_PATTERNS = listOf(
+            "Runtime.getRuntime().exec" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "危险命令执行", "检测到 Runtime.exec() 调用", "除非绝对必要不应执行系统命令"),
+            "Runtime.exec" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "危险命令执行", "检测到 Runtime.exec() 调用", "除非绝对必要不应执行系统命令"),
+            "ProcessBuilder(" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "危险进程创建", "检测到 ProcessBuilder", "除非绝对必要不应创建系统进程"),
+            "Class.forName(" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "反射调用", "使用反射加载类", "请确认为什么需要反射"),
+            "getDeclaredMethod(" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "反射获取方法", "使用反射获取私有方法", "不建议反射访问私有API"),
+            "getDeclaredField(" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "反射获取字段", "使用反射获取私有字段", "不建议反射访问私有字段"),
+            "setAccessible(true)" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "强制访问私有成员", "调用setAccessible绕过访问控制", "高风险行为"),
+            "DexClassLoader" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "动态代码加载", "使用DexClassLoader动态加载代码", "动态加载代码存在安全风险"),
+            "PathClassLoader" to ApiPatternInfo(Severity.HIGH, Category.CODE_INJECTION, "动态代码加载", "使用PathClassLoader动态加载类", "请确认为什么需要动态加载"),
+            "SmsManager" to ApiPatternInfo(Severity.HIGH, Category.PRIVACY_VIOLATION, "短信管理", "检测到SmsManager", "发送短信可能产生费用"),
+            "sendTextMessage" to ApiPatternInfo(Severity.HIGH, Category.PRIVACY_VIOLATION, "发送短信", "检测到发送短信操作", "应征求用户明确同意"),
+            "Intent.ACTION_CALL" to ApiPatternInfo(Severity.HIGH, Category.PRIVACY_VIOLATION, "拨打电话", "检测到直接拨打电话", "建议使用ACTION_DIAL让用户确认"),
+            "TelephonyManager" to ApiPatternInfo(Severity.MEDIUM, Category.PRIVACY_VIOLATION, "电话状态访问", "检测到TelephonyManager", "可能泄露设备标识"),
+            "android.os.Process" to ApiPatternInfo(Severity.MEDIUM, Category.CODE_INJECTION, "进程操作", "检测到android.os.Process操作", "可能导致应用崩溃"),
+            "su" to ApiPatternInfo(Severity.CRITICAL, Category.CODE_INJECTION, "Root提权", "检测到su命令", "最高风险行为"),
+            "Superuser" to ApiPatternInfo(Severity.CRITICAL, Category.CODE_INJECTION, "Root检测", "检测到Superuser", "任何提权尝试都是高风险"),
+            "getDeviceId" to ApiPatternInfo(Severity.MEDIUM, Category.PRIVACY_VIOLATION, "获取设备ID", "获取设备唯一标识符", "可能用于设备追踪"),
+            "getSimSerialNumber" to ApiPatternInfo(Severity.HIGH, Category.PRIVACY_VIOLATION, "获取SIM序列号", "获取SIM卡序列号", "高度敏感标识信息"),
+            "getSubscriberId" to ApiPatternInfo(Severity.HIGH, Category.PRIVACY_VIOLATION, "获取用户标识", "获取IMSI", "高度敏感个人信息"),
+            "getInstalledApplications" to ApiPatternInfo(Severity.MEDIUM, Category.PRIVACY_VIOLATION, "获取已安装应用", "获取已安装应用列表", "可能用于分析用户行为"),
+            "getInstalledPackages" to ApiPatternInfo(Severity.MEDIUM, Category.PRIVACY_VIOLATION, "获取已安装包", "获取已安装包名列表", "可被用于分析用户行为"),
+            "delete(" to ApiPatternInfo(Severity.LOW, Category.FILE_SYSTEM_ABUSE, "文件删除", "检测到文件删除操作", "确保仅限于Skill数据目录"),
+            "deleteRecursively" to ApiPatternInfo(Severity.MEDIUM, Category.FILE_SYSTEM_ABUSE, "递归删除", "检测到递归删除", "应谨慎使用")
+        )
     }
 
     /**
@@ -431,166 +457,6 @@ class SecurityRules {
         val description: String,
         val recommendation: String
     )
-
-    companion object {
-        private val DANGEROUS_API_PATTERNS = listOf(
-            // 命令执行
-            "Runtime.getRuntime().exec" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "危险命令执行",
-                "检测到 Runtime.exec() 调用，可能执行系统命令",
-                "除非绝对必要，不应在 Skill 中执行系统命令"
-            ),
-            "Runtime.exec" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "危险命令执行",
-                "检测到 Runtime.exec() 调用，可能执行系统命令",
-                "除非绝对必要，不应在 Skill 中执行系统命令"
-            ),
-            "ProcessBuilder(" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "危险进程创建",
-                "检测到 ProcessBuilder，可能创建系统进程",
-                "除非绝对必要，不应在 Skill 中创建系统进程"
-            ),
-
-            // 反射调用
-            "Class.forName(" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "反射调用 Class.forName",
-                "使用反射加载类，可能绕过安全检查",
-                "反射调用可能被用于绕过安全限制，请确认为什么需要反射"
-            ),
-            "getDeclaredMethod(" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "反射获取方法",
-                "使用反射获取私有方法，可能绕过访问控制",
-                "不建议在 Skill 中使用反射访问私有 API"
-            ),
-            "getDeclaredField(" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "反射获取字段",
-                "使用反射获取私有字段，可能绕过访问控制",
-                "不建议在 Skill 中使用反射访问私有字段"
-            ),
-            "setAccessible(true)" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "强制访问私有成员",
-                "调用 setAccessible(true) 绕过 Java 访问控制",
-                "此操作可绕过所有访问控制，是高风险行为"
-            ),
-
-            // 动态代码加载
-            "DexClassLoader" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "动态代码加载",
-                "使用 DexClassLoader 动态加载代码",
-                "动态加载的代码无法在安装时被扫描，存在安全风险"
-            ),
-            "PathClassLoader" to ApiPatternInfo(
-                Severity.HIGH, Category.CODE_INJECTION,
-                "动态代码加载",
-                "使用 PathClassLoader 动态加载类",
-                "请确认为什么需要动态加载代码"
-            ),
-
-            // 短信相关
-            "SmsManager" to ApiPatternInfo(
-                Severity.HIGH, Category.PRIVACY_VIOLATION,
-                "短信管理",
-                "检测到 SmsManager 使用，可能发送短信",
-                "发送短信可能产生费用，请确认 Skill 功能确需此能力"
-            ),
-            "sendTextMessage" to ApiPatternInfo(
-                Severity.HIGH, Category.PRIVACY_VIOLATION,
-                "发送短信",
-                "检测到发送短信操作",
-                "发送短信可能产生费用，应征求用户明确同意"
-            ),
-
-            // 电话
-            "Intent.ACTION_CALL" to ApiPatternInfo(
-                Severity.HIGH, Category.PRIVACY_VIOLATION,
-                "拨打电话",
-                "检测到直接拨打电话 Intent",
-                "直接拨打电话可能产生费用，建议使用 ACTION_DIAL 让用户确认"
-            ),
-            "TelephonyManager" to ApiPatternInfo(
-                Severity.MEDIUM, Category.PRIVACY_VIOLATION,
-                "电话状态访问",
-                "检测到 TelephonyManager 使用，可能读取设备标识",
-                "访问电话状态可能泄露 IMEI 等设备标识信息"
-            ),
-
-            // 进程注入
-            "android.os.Process" to ApiPatternInfo(
-                Severity.MEDIUM, Category.CODE_INJECTION,
-                "进程操作",
-                "检测到 android.os.Process 相关操作",
-                "操作系统进程可能导致应用崩溃或被利用"
-            ),
-
-            // Root 检测/提权
-            "su" to ApiPatternInfo(
-                Severity.CRITICAL, Category.CODE_INJECTION,
-                "Root 权限检测/提权",
-                "检测到 'su' 命令使用，可能尝试获取 Root 权限",
-                "请求 Root 权限是最高风险行为之一，应立即阻止"
-            ),
-            "Superuser" to ApiPatternInfo(
-                Severity.CRITICAL, Category.CODE_INJECTION,
-                "Root 权限检测",
-                "检测到 Superuser 相关代码，可能尝试提权",
-                "任何提权尝试都应被标记为高风险"
-            ),
-
-            // 敏感数据收集
-            "getDeviceId" to ApiPatternInfo(
-                Severity.MEDIUM, Category.PRIVACY_VIOLATION,
-                "获取设备 ID",
-                "获取设备唯一标识符",
-                "获取设备 ID 可能用于设备追踪，请说明用途"
-            ),
-            "getSimSerialNumber" to ApiPatternInfo(
-                Severity.HIGH, Category.PRIVACY_VIOLATION,
-                "获取 SIM 卡序列号",
-                "获取 SIM 卡序列号，属于高度敏感的标识信息",
-                "不应在非必要场景下获取 SIM 卡信息"
-            ),
-            "getSubscriberId" to ApiPatternInfo(
-                Severity.HIGH, Category.PRIVACY_VIOLATION,
-                "获取用户标识",
-                "获取 IMSI 等用户标识信息",
-                "用户标识是高度敏感的个人信息"
-            ),
-            "getInstalledApplications" to ApiPatternInfo(
-                Severity.MEDIUM, Category.PRIVACY_VIOLATION,
-                "获取已安装应用列表",
-                "获取设备上所有已安装应用的列表",
-                "此操作可能用于了解用户安装的其他应用"
-            ),
-            "getInstalledPackages" to ApiPatternInfo(
-                Severity.MEDIUM, Category.PRIVACY_VIOLATION,
-                "获取已安装包列表",
-                "获取设备上所有已安装应用的包名列表",
-                "包名列表可被用于分析用户行为"
-            ),
-
-            // 文件系统滥用
-            "delete(" to ApiPatternInfo(
-                Severity.LOW, Category.FILE_SYSTEM_ABUSE,
-                "文件删除操作",
-                "检测到文件删除操作",
-                "请确认删除操作仅限于 Skill 自己的数据目录"
-            ),
-            "deleteRecursively" to ApiPatternInfo(
-                Severity.MEDIUM, Category.FILE_SYSTEM_ABUSE,
-                "递归删除文件",
-                "检测到递归删除文件操作，可能导致大量数据丢失",
-                "递归删除应谨慎使用，确保目标路径正确"
-            )
-        )
-    }
 
     // ===== 内部辅助类 =====
 

@@ -482,7 +482,7 @@ class ContactsSkill : SkillDefinition {
                 phones.add(mapOf(
                     "number" to if (numCol >= 0) it.getString(numCol) else null,
                     "type" to if (typeCol >= 0) getPhoneTypeLabel(it.getInt(typeCol)) else "unknown",
-                    "primary" to (if (primaryCol >= 0) it.getInt(primaryCol) else 0) != 0
+                    "primary" to ((if (primaryCol >= 0) it.getInt(primaryCol) else 0) != 0)
                 ))
             }
         }

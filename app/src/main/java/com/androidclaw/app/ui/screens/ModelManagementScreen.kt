@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,6 +34,7 @@ import com.androidclaw.app.llm.model.DownloadState
 import com.androidclaw.app.llm.model.HardwareCapability
 import com.androidclaw.app.llm.model.HardwareDetector
 import com.androidclaw.app.llm.model.InferenceEngine
+import com.androidclaw.app.llm.model.ModelCatalog
 import com.androidclaw.app.llm.model.ModelConfig
 import com.androidclaw.app.llm.model.ModelSize
 import com.androidclaw.app.llm.model.ModelType
@@ -652,6 +654,7 @@ private fun ModernModelCard(
 
 private fun getModelIcon(modelType: ModelType): ImageVector = when (modelType) {
     ModelType.LLM -> Icons.Default.Psychology
+    ModelType.VLM -> Icons.Default.Visibility
     ModelType.EMBEDDING -> Icons.Default.Fingerprint
     ModelType.VISION -> Icons.Default.Visibility
     ModelType.SPEECH -> Icons.Default.RecordVoiceOver
@@ -660,6 +663,7 @@ private fun getModelIcon(modelType: ModelType): ImageVector = when (modelType) {
 
 private fun getModelGradientColors(modelType: ModelType): List<Color> = when (modelType) {
     ModelType.LLM -> listOf(Color(0xFF6C63FF), Color(0xFF8B85FF))
+    ModelType.VLM -> listOf(Color(0xFFFF6B6B), Color(0xFFFF8585))
     ModelType.EMBEDDING -> listOf(Color(0xFF4ECDC4), Color(0xFF44A08D))
     ModelType.VISION -> listOf(Color(0xFFFF6B6B), Color(0xFFFF8585))
     ModelType.SPEECH -> listOf(Color(0xFFFF9500), Color(0xFFFFAB76))

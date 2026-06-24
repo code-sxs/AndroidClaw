@@ -66,7 +66,7 @@ class WakeWordDetector(private val context: Context) {
 
     companion object {
         private const val TAG = "WakeWordDetector"
-        private const val TODO_MESSAGE = """
+        private val TODO_MESSAGE = """
             TODO: 唤醒词检测功能尚未实现。
             需要集成第三方唤醒词检测引擎（如 Picovoice Porcupine）。
             请参考 SKILL.md 中的实现指南。

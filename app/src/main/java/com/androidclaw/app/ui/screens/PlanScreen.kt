@@ -689,10 +689,10 @@ private fun startPlanExecution(
                     when (event) {
                         is PlanExecutionEvent.StepStarted -> { }
                         is PlanExecutionEvent.StepCompleted -> {
-                            setProgress(event.completedSteps to plan.steps.size)
+                            setProgress((event.stepIndex + 1) to plan.steps.size)
                         }
                         is PlanExecutionEvent.StepFailed -> {
-                            setProgress(event.completedSteps to plan.steps.size)
+                            setProgress((event.stepIndex + 1) to plan.steps.size)
                         }
                         is PlanExecutionEvent.ProgressUpdate -> {
                             setProgress(event.completedSteps to event.totalSteps)
@@ -718,5 +718,5 @@ private fun cancelPlanExecution(
     planManager: PlanManager,
     plan: ExecutionPlan
 ) {
-    planManager.cancelPlan(plan.id)
+    planManager.cancelPlan()
 }

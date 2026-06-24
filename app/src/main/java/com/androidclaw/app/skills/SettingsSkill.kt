@@ -418,10 +418,10 @@ class SettingsSkill : SkillDefinition {
             ))
         } catch (e: SecurityException) {
             Log.e(TAG, "Camera permission denied for flashlight", e)
-            ToolResult.Error("缺少相机权限来使用手电筒")
+            return ToolResult.Error("缺少相机权限来使用手电筒")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to toggle flashlight", e)
-            ToolResult.Error("手电筒操作失败: ${e.message}", e)
+            return ToolResult.Error("手电筒操作失败: ${e.message}", e)
         }
     }
 

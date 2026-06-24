@@ -5,7 +5,7 @@ package com.androidclaw.app.ui.components
 
 import android.os.Build
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -194,9 +194,10 @@ fun GradientGlassCard(
                     )
                 } else Modifier
             )
-            .padding(16.dp),
-        content = content
-    )
+            .padding(16.dp)
+    ) {
+        Column(content = content)
+    }
 }
 
 /**

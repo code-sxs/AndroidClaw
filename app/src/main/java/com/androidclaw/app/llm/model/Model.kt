@@ -9,11 +9,11 @@ import kotlinx.parcelize.Parcelize
 /**
  * 推理引擎类型
  */
-enum class InferenceEngine {
-    NONE,      // 未初始化
-    MEDIAPIPE, // MediaPipe LLM Inference API (首选)
-    MLC_LLM,   // MLC-LLM (备用)
-    LITERT     // Google LiteRT (第三选项)
+enum class InferenceEngine(val displayName: String) {
+    NONE("未初始化"),
+    MEDIAPIPE("MediaPipe"),
+    MLC_LLM("MLC-LLM"),
+    LITERT("LiteRT")
 }
 
 /**
@@ -84,8 +84,12 @@ data class ModelConfig(
  * 模型类型
  */
 enum class ModelType {
-    LLM,  // 大语言模型 (纯文本)
-    VLM   // 视觉语言模型 (图片 + 文本)
+    LLM,       // 大语言模型 (纯文本)
+    VLM,       // 视觉语言模型 (图片 + 文本)
+    EMBEDDING, // 嵌入模型
+    VISION,    // 视觉模型
+    SPEECH,    // 语音模型
+    OTHER      // 其他模型
 }
 
 /**

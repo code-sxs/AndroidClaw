@@ -1,0 +1,49 @@
+﻿
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:23:15 Conflicting declarations: public companion object, public companion object
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:152:37 Unresolved reference: DANGEROUS_API_PATTERNS
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:153:26 Overload resolution ambiguity: 
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:435:5 Only one companion object is allowed per class
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:435:15 Conflicting declarations: public companion object, public companion object
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:24:34 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:32:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:33:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:34:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:87:30 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:88:8 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:94:32 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:105:32 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:123:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:126:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:129:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:132:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:308:20 Unresolved reference: ACTION_FACTORY_RESET
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:202:21 Unresolved reference: FloatingActionButtonScrollBehavior
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:314:18 Unresolved reference: graphicsLayer
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:314:34 Unresolved reference: rotationZ
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:387:29 Unresolved reference: scale
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:411:46 Unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+
+

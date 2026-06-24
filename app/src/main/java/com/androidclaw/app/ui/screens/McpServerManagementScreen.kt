@@ -351,7 +351,7 @@ private fun ModernMcpServerCard(
                     }
                     
                     // 工具列表
-                    if (server.tools.isNotEmpty()) {
+                    if (server.mcpTools.isNotEmpty()) {
                         Text(
                             text = "可用工具",
                             style = MaterialTheme.typography.labelMedium,
@@ -362,7 +362,7 @@ private fun ModernMcpServerCard(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            server.tools.take(4).forEach { tool ->
+                            server.mcpTools.take(4).forEach { tool ->
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
                                     color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
@@ -375,13 +375,13 @@ private fun ModernMcpServerCard(
                                     )
                                 }
                             }
-                            if (server.tools.size > 4) {
+                            if (server.mcpTools.size > 4) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
                                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                                 ) {
                                     Text(
-                                        text = "+${server.tools.size - 4}",
+                                        text = "+${server.mcpTools.size - 4}",
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                                     )

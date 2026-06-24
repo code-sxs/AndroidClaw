@@ -107,4 +107,90 @@ class ${skillName.capitalize()}Skill : SkillDefinition {
     fun fileOperationTemplate(): String = "// File operation template - simplified"
     fun broadcastReceiverTemplate(): String = "// Broadcast receiver template - simplified"
     fun foregroundServiceTemplate(): String = "// Foreground service template - simplified"
+
+    /**
+     * 生成 skill_manifest.json
+     */
+    fun manifestTemplate(
+        skillName: String,
+        displayName: String,
+        description: String,
+        permissions: List<String>,
+        tools: List<ToolSpec>
+    ): String {
+        val toolsJson = tools.joinToString(",\n            ") { tool ->
+            val paramsJson = tool.parameters.joinToString(",") { param ->
+                """{"name": "${param.name}", "type": "${param.type}", "required": ${param.required}, "description": "${param.description}"}"""
+            }
+            """            {
+                "name": "${tool.name}",
+                "description": "${tool.description}",
+                "parameters": [$paramsJson],
+                "returnType": "${tool.returnType}"
+            }"""
+        }
+        val permsJson = permissions.joinToString(",") { "\"$it\"" }
+
+        return """{
+    "name": "$skillName",
+    "display_name": "$displayName",
+    "description": "$description",
+    "version": "1.0.0",
+    "entry_point": "${skillName}_skill.kt",
+    "permissions": [$permsJson],
+    "tools": [
+$toolsJson
+    ],
+    "author": "AndroidClaw Skill Creator",
+    "generated_at": "${System.currentTimeMillis()}"
+}""".trimIndent()
+    }
+
+    /**
+     * 生成 README.md
+     */
+    fun readmeTemplate(
+        skillName: String,
+        displayName: String,
+        description: String,
+        tools: List<ToolSpec>,
+        permissions: List<String>
+    ): String {
+        val toolsSection = tools.joinToString("\n") { tool ->
+            val paramsSection = if (tool.parameters.isNotEmpty()) {
+                tool.parameters.joinToString("\n") { param ->
+                    "  - `${param.name}` (${param.type}) ${if (param.required) "**必需**" else "可选"} - ${param.description}"
+                }
+            } else "  - 无参数"
+            """### ${tool.name}
+${tool.description}
+
+**参数:**
+$paramsSection
+
+**返回类型:** ${tool.returnType}"""
+        }
+        val permsSection = if (permissions.isNotEmpty()) {
+            permissions.joinToString("\n") { "- `$it`" }
+        } else "- 无特殊权限要求"
+
+        return """# $displayName
+
+$description
+
+## 安装
+
+将此 Skill 放入 AndroidClaw 的 skills 目录中。
+
+## 权限要求
+
+$permsSection
+
+## 工具
+
+$toolsSection
+
+---
+*由 AndroidClaw Skill Creator 自动生成*""".trimIndent()
+    }
 }

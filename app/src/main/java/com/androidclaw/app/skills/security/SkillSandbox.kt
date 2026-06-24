@@ -29,9 +29,6 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.File
-import java.lang.management.ManagementFactory
-import java.lang.management.MemoryMXBean
-import java.lang.management.MemoryUsage
 
 /**
  * 运行时沙箱
@@ -305,7 +302,7 @@ class SkillSandbox(private val context: Context) {
             Intent.ACTION_DELETE,
             Intent.ACTION_UNINSTALL_PACKAGE,
             Intent.ACTION_INSTALL_PACKAGE,
-            Intent.ACTION_FACTORY_RESET,
+            Intent.ACTION_SHUTDOWN,
             Intent.ACTION_MAIN // 启动其他 Activity 需要检查
         )
 

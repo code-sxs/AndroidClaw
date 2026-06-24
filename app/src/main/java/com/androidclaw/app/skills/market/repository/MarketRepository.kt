@@ -72,7 +72,7 @@ class MarketRepository private constructor(
         )
     }
 
-    private val localAdapter: SkillLocalAdapter by lazy {
+    private val _localAdapter: SkillLocalAdapter by lazy {
         SkillLocalAdapter(context)
     }
 
@@ -143,7 +143,7 @@ class MarketRepository private constructor(
     }
 
     /** 获取本地化适配器 */
-    fun getLocalAdapter(): SkillLocalAdapter = localAdapter
+    fun getLocalAdapter(): SkillLocalAdapter = _localAdapter
 
     /** 清除搜索缓存 */
     suspend fun clearCache() {

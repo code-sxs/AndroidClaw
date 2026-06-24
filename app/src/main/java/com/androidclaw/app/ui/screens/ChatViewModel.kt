@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidclaw.app.voice.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  * 聊天消息数据类

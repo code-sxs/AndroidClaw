@@ -332,7 +332,7 @@ class FileOpsSkill : SkillDefinition {
             file.delete()
         }
 
-        if (deleted) {
+        return if (deleted) {
             Log.d(TAG, "Deleted: $path")
             ToolResult.Success(mapOf(
                 "path" to path,

@@ -172,7 +172,6 @@ private fun createIosColorScheme(darkTheme: Boolean): ColorScheme {
             onSecondary = IosColors.OnSecondary,
             tertiary = IosColors.Tertiary,
             onTertiary = Color.White,
-            quaternary = IosColors.Quaternary,
             background = IosColors.BackgroundDark,
             onBackground = IosColors.OnBackgroundDark,
             surface = IosColors.SurfaceDark,
@@ -192,7 +191,6 @@ private fun createIosColorScheme(darkTheme: Boolean): ColorScheme {
             onSecondary = IosColors.OnSecondary,
             tertiary = IosColors.Tertiary,
             onTertiary = Color.White,
-            quaternary = IosColors.Quaternary,
             background = IosColors.Background,
             onBackground = IosColors.OnBackground,
             surface = IosColors.Surface,
@@ -244,19 +242,7 @@ fun AndroidClawTheme(
         ).value
     )
     
-    // 设置状态栏
-    val view = android.app.ActivityLocalStorage.current
-    if (view != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val window = (view as? android.app.Activity)?.window
-        window?.let {
-            val flags = android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            if (!darkTheme) {
-                it.decorView.systemUiVisibility = it.decorView.systemUiVisibility or flags
-            } else {
-                it.decorView.systemUiVisibility = it.decorView.systemUiVisibility and flags.inv()
-            }
-        }
-    }
+    // 状态栏配置已移至 Activity 级别处理
     
     MaterialTheme(
         colorScheme = animatedColorScheme,

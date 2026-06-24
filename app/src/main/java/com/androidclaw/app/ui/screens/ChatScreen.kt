@@ -334,7 +334,7 @@ fun ModernChatMessageItem(
             ) {
                 // 时间戳
                 Text(
-                    text = message.timestamp,
+                    text = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date(message.timestamp)),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                     modifier = Modifier.padding(end = 4.dp, bottom = 2.dp)
@@ -456,7 +456,7 @@ fun ModernChatMessageItem(
                     }
                     
                     Text(
-                        text = message.timestamp,
+                        text = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date(message.timestamp)),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )

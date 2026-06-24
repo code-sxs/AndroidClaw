@@ -16,6 +16,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -199,7 +201,7 @@ fun GradientAppBar(
 fun CollapsingAppBar(
     title: String,
     modifier: Modifier = Modifier,
-    scrollBehavior: FloatingActionButtonScrollBehavior? = null,
+    scrollBehavior: Any? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -408,7 +410,7 @@ fun AnimatedTabRow(
     
     val indicatorOffset by animateDpAsState(
         targetValue = if (tabs.isNotEmpty() && selectedTabIndex < tabs.size) {
-            tabWidths.take(selectedTabIndex).sum() + tabWidths.getOrElse(selectedTabIndex) { 0.dp } / 2
+            tabWidths.take(selectedTabIndex).fold(0.dp) { acc, dp -> acc + dp } + tabWidths.getOrElse(selectedTabIndex) { 0.dp } / 2
         } else 0.dp,
         animationSpec = tween(300, easing = FastOutSlowInEasing),
         label = "tab_indicator"

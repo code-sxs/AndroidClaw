@@ -161,11 +161,11 @@ class VoiceOutputManager(private val context: Context) {
             Log.d(TAG, "Available languages: $languages")
 
             // 设置默认语言（中文）
-            val langResult = setLanguage(config.language)
-            if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+            val langSuccess = setLanguage(config.language)
+            if (!langSuccess) {
                 Log.w(TAG, "Language ${config.language} not available, falling back to default")
                 // 尝试使用默认语言
-                setLanguage(Locale.getDefault())
+                setLanguage(Locale.getDefault().toString())
             }
 
             isInitialized = true
@@ -299,7 +299,7 @@ class VoiceOutputManager(private val context: Context) {
     fun pause() {
         Log.d(TAG, "Pausing TTS")
         // 注意：不是所有 TTS 引擎都支持暂停
-        tts?.playSilent(0, TextToSpeech.QUEUE_ADD, null)
+        // Note: playSilent is not available in standard Android TTS API
     }
 
     /**

@@ -1,0 +1,333 @@
+﻿Configuration on demand is an incubating feature.
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+.\gradlew.bat : e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/App
+ManagerSkill.kt:182:17 Type mismatch: inferred type is Int but Long was expected
+所在位置 行:1 字符: 149
++ ... claw\workspace\AndroidClaw"; .\gradlew.bat assembleDebug 2>&1 | Out-F ...
++                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (e: file:///C:/U...ng was expected:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/ContactsSkill.kt:48
+5:21 Operator '!=' cannot be applied to 'Pair<String, Int>' and 'Int'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/ContactsSkill.kt:48
+5:21 Type mismatch: inferred type is Boolean but Pair<TypeVariable(K), TypeVariable(V)> was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/FileOpsSkill.kt:349
+:5 A 'return' expression required in a function with a block body ('{...}')
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/SettingsSkill.kt:42
+6:5 A 'return' expression required in a function with a block body ('{...}')
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/CodeTemplat
+es.kt:9:12 Redeclaration: ToolSpec
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/Requirement
+Parser.kt:215:38 Type mismatch: inferred type is List<ParameterSpec> but List<ToolParameterSpec> was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/Requirement
+Parser.kt:410:30 Type mismatch: inferred type is List<ParameterSpec> but List<ToolParameterSpec> was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/Requirement
+Parser.kt:441:12 Redeclaration: ToolSpec
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillCreato
+rViewModel.kt:87:54 Classifier 'Parsing' does not have a companion object, and thus must be initialized here
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillCreato
+rViewModel.kt:112:54 Classifier 'Generating' does not have a companion object, and thus must be initialized here
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillCreato
+rViewModel.kt:152:54 Classifier 'Optimizing' does not have a companion object, and thus must be initialized here
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillCreato
+rViewModel.kt:244:54 Classifier 'Sharing' does not have a companion object, and thus must be initialized here
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillGenera
+tor.kt:87:46 Unresolved reference: manifestTemplate
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/creator/SkillGenera
+tor.kt:96:40 Unresolved reference: readmeTemplate
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:23:15 Conflicting declarations: public companion object, public companion object
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:152:37 Unresolved reference: DANGEROUS_API_PATTERNS
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:153:26 Overload resolution ambiguity: 
+public operator fun CharSequence.contains(char: Char, ignoreCase: Boolean = ...): Boolean defined in kotlin.text
+public operator fun CharSequence.contains(other: CharSequence, ignoreCase: Boolean = ...): Boolean defined in kotlin.te
+xt
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:435:5 Only one companion object is allowed per class
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SecurityRu
+les.kt:435:15 Conflicting declarations: public companion object, public companion object
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:24:34 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:32:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:33:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:34:18 Unresolved reference: management
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:87:30 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:88:8 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:94:32 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:105:32 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:123:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:126:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:129:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:132:17 Unresolved reference: ToolResult
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/skills/security/SkillSandb
+ox.kt:308:20 Unresolved reference: ACTION_FACTORY_RESET
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:202:21 Unresolved reference: FloatingActionButtonScrollBehavior
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:314:18 Unresolved reference: graphicsLayer
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:314:34 Unresolved reference: rotationZ
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:387:29 Unresolved reference: scale
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedAppB
+ar.kt:411:46 Unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun Array<out Byte>.sum(): Int defined in kotlin.collections
+public fun Array<out Double>.sum(): Double defined in kotlin.collections
+public fun Array<out Float>.sum(): Float defined in kotlin.collections
+public fun Array<out Int>.sum(): Int defined in kotlin.collections
+public fun Array<out Long>.sum(): Long defined in kotlin.collections
+public fun Array<out Short>.sum(): Int defined in kotlin.collections
+public fun Array<out UByte>.sum(): UInt defined in kotlin.collections
+public fun Array<out UInt>.sum(): UInt defined in kotlin.collections
+public fun Array<out ULong>.sum(): ULong defined in kotlin.collections
+public fun Array<out UShort>.sum(): UInt defined in kotlin.collections
+public fun ByteArray.sum(): Int defined in kotlin.collections
+public fun DoubleArray.sum(): Double defined in kotlin.collections
+public fun FloatArray.sum(): Float defined in kotlin.collections
+public fun IntArray.sum(): Int defined in kotlin.collections
+public fun LongArray.sum(): Long defined in kotlin.collections
+public fun ShortArray.sum(): Int defined in kotlin.collections
+public inline fun UByteArray.sum(): UInt defined in kotlin.collections
+public inline fun UIntArray.sum(): UInt defined in kotlin.collections
+public inline fun ULongArray.sum(): ULong defined in kotlin.collections
+public inline fun UShortArray.sum(): UInt defined in kotlin.collections
+public fun Iterable<Byte>.sum(): Int defined in kotlin.collections
+public fun Iterable<Double>.sum(): Double defined in kotlin.collections
+public fun Iterable<Float>.sum(): Float defined in kotlin.collections
+public fun Iterable<Int>.sum(): Int defined in kotlin.collections
+public fun Iterable<Long>.sum(): Long defined in kotlin.collections
+public fun Iterable<Short>.sum(): Int defined in kotlin.collections
+public fun Iterable<UByte>.sum(): UInt defined in kotlin.collections
+public fun Iterable<UInt>.sum(): UInt defined in kotlin.collections
+public fun Iterable<ULong>.sum(): ULong defined in kotlin.collections
+public fun Iterable<UShort>.sum(): UInt defined in kotlin.collections
+public fun Sequence<Byte>.sum(): Int defined in kotlin.sequences
+public fun Sequence<Double>.sum(): Double defined in kotlin.sequences
+public fun Sequence<Float>.sum(): Float defined in kotlin.sequences
+public fun Sequence<Int>.sum(): Int defined in kotlin.sequences
+public fun Sequence<Long>.sum(): Long defined in kotlin.sequences
+public fun Sequence<Short>.sum(): Int defined in kotlin.sequences
+public fun Sequence<UByte>.sum(): UInt defined in kotlin.sequences
+public fun Sequence<UInt>.sum(): UInt defined in kotlin.sequences
+public fun Sequence<ULong>.sum(): ULong defined in kotlin.sequences
+public fun Sequence<UShort>.sum(): UInt defined in kotlin.sequences
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/AnimatedText
+Field.kt:380:96 Unresolved reference: Mic
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/GlassCard.kt
+:60:18 Unresolved reference: animateFloatAsState
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/GlassCard.kt
+:165:18 Unresolved reference: animateFloatAsState
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/GlassCard.kt
+:198:9 Cannot find a parameter with this name: content
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/GradientButt
+on.kt:13:48 Unresolved reference: collectIsRipplePresent
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/GradientButt
+on.kt:58:40 Unresolved reference: collectIsRipplePresent
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/LoadingIndic
+ator.kt:441:9 Unresolved reference: Text
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/LoadingIndic
+ator.kt:469:9 Unresolved reference: Text
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/components/LoadingIndic
+ator.kt:476:13 Unresolved reference: Text
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:244:34 Cannot find a parameter with this name: skillName
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:267:89 No value passed for parameter 'context'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:269:103 No value passed for parameter 'context'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:320:54 No value passed for parameter 'context'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:369:89 No value passed for parameter 'context'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/navigation/AndroidClawN
+avHost.kt:384:29 Type 'State<Float>' has no method 'getValue(Nothing?, KProperty<*>)' and thus it cannot serve as a del
+egate
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:71:13 Cannot find a parameter with this name: iterations
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:118:51 Unresolved reference: OPEN_AI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:123:73 Unresolved reference: OPEN_AI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:124:71 Unresolved reference: OPEN_AI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:138:51 Unresolved reference: GEMINI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:143:73 Unresolved reference: GEMINI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:144:71 Unresolved reference: GEMINI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:215:59 Unresolved reference: SolidColor
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:547:20 Unresolved reference: OPEN_AI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AiProviderSetti
+ngsScreen.kt:549:20 Unresolved reference: GEMINI
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AutomationScree
+n.kt:31:42 Unresolved reference: StatusIndicator
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AutomationScree
+n.kt:211:17 Unresolved reference: StatusIndicator
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AutomationViewM
+odel.kt:226:20 Unresolved reference: �������ϰ�����
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/AutomationViewM
+odel.kt:226:20 Unsupported [literal prefixes and suffixes]
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ChatScreen.kt:3
+36:17 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyl
+e: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textD
+ecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ...
+, softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..
+., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontSt
+yle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration
+: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWra
+p: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: T
+extStyle = ...): Unit defined in androidx.compose.material3
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ChatScreen.kt:4
+58:21 None of the following functions can be called with the arguments supplied: 
+public fun Text(text: AnnotatedString, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyl
+e: FontStyle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textD
+ecoration: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ...
+, softWrap: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., inlineContent: Map<String, InlineTextContent> = ..
+., onTextLayout: (TextLayoutResult) -> Unit = ..., style: TextStyle = ...): Unit defined in androidx.compose.material3
+public fun Text(text: String, modifier: Modifier = ..., color: Color = ..., fontSize: TextUnit = ..., fontStyle: FontSt
+yle? = ..., fontWeight: FontWeight? = ..., fontFamily: FontFamily? = ..., letterSpacing: TextUnit = ..., textDecoration
+: TextDecoration? = ..., textAlign: TextAlign? = ..., lineHeight: TextUnit = ..., overflow: TextOverflow = ..., softWra
+p: Boolean = ..., maxLines: Int = ..., minLines: Int = ..., onTextLayout: ((TextLayoutResult) -> Unit)? = ..., style: T
+extStyle = ...): Unit defined in androidx.compose.material3
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ChatViewModel.k
+t:139:24 Unresolved reference: launch
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ChatViewModel.k
+t:140:32 Suspend function 'delay' should be called only from a coroutine or another suspend function
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/McpServerManage
+mentScreen.kt:354:32 Cannot access 'tools': it is private in 'McpSkill'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/McpServerManage
+mentScreen.kt:365:36 Cannot access 'tools': it is private in 'McpSkill'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/McpServerManage
+mentScreen.kt:378:40 Cannot access 'tools': it is private in 'McpSkill'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/McpServerManage
+mentScreen.kt:384:59 Cannot access 'tools': it is private in 'McpSkill'
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:65:28 Unresolved reference: ModelCatalog
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:66:58 Unresolved reference: it
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:67:20 Unresolved reference: it
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:85:26 Not enough information to infer type variable T
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:87:22 Unresolved reference: ModelCatalog
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:87:77 Unresolved reference: it
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:88:22 Unresolved reference: ModelCatalog
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:88:78 Unresolved reference: it
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:89:22 Unresolved reference: ModelCatalog
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:89:53 Unresolved reference: it
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:90:21 Unresolved reference: ModelCatalog
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:159:46 Unresolved reference: modelId
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:160:58 Unresolved reference: modelId
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:161:68 Unresolved reference: modelId
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:164:29 Type mismatch: inferred type is Int but ModelConfig was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:170:59 Type mismatch: inferred type is Int but ModelConfig was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:172:47 Unresolved reference: modelId
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:181:53 Type mismatch: inferred type is Int but ModelConfig was expected
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:473:54 Unresolved reference: displayName
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:566:44 Unresolved reference: scale
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:653:63 'when' expression must be exhaustive, add necessary 'VLM' branch or 'else' branch instead
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/ModelManagement
+Screen.kt:661:73 'when' expression must be exhaustive, add necessary 'VLM' branch or 'else' branch instead
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/SecurityReportS
+creen.kt:116:25 Unresolved reference: IconButton
+e: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/app/src/main/java/com/androidclaw/app/ui/screens/SecurityReportS
+creen.kt:117:29 @Composable invocations can only happen from the context of a @Composable function
+
+> Task :app:compileDebugKotlin FAILED
+
+[Incubating] Problems report is available at: file:///C:/Users/AYU20/.qclaw/workspace/AndroidClaw/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCo
+mpilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 32s
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+31 actionable tasks: 3 executed, 28 up-to-date

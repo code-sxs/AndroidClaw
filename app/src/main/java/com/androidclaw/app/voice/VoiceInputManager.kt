@@ -161,7 +161,7 @@ class VoiceInputManager(private val context: Context) {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, config.language)
-            putExtra(RecognizerIntent.EXTRA_PARTIAL, config.enablePartialResults)
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, config.enablePartialResults)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
             
             // 在线/离线模式

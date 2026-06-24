@@ -327,12 +327,12 @@ class SkillCreatorViewModel(application: Application) : AndroidViewModel(applica
  */
 sealed class SkillCreatorUiState {
     object Idle : SkillCreatorUiState()
-    data class Parsing(val message: String = "正在分析需求...") : SkillCreatorUiState()
+    object Parsing : SkillCreatorUiState()
     data class Parsed(val requirement: ParsedRequirement) : SkillCreatorUiState()
-    data class Generating(val message: String = "正在生成...") : SkillCreatorUiState()
+    object Generating : SkillCreatorUiState()
     data class Generated(val result: SkillGenerator.GenerationResult) : SkillCreatorUiState()
-    data class Optimizing(val message: String = "正在优化...") : SkillCreatorUiState()
-    data class Sharing(val message: String = "正在分享...") : SkillCreatorUiState()
+    object Optimizing : SkillCreatorUiState()
+    object Sharing : SkillCreatorUiState()
     data class Shared(val results: List<SkillSharer.ShareResult>) : SkillCreatorUiState()
     data class Error(val message: String) : SkillCreatorUiState()
 }

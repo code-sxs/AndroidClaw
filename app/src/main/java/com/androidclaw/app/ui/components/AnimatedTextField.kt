@@ -377,7 +377,7 @@ fun VoiceAnimatedTextField(
                     )
             ) {
                 Icon(
-                    imageVector = leadingIcon ?: androidx.compose.material.icons.Icons.Default.Mic,
+                    imageVector = leadingIcon ?: Icons.Default.Search,
                     contentDescription = if (isListening) "停止" else "开始语音",
                     tint = if (isListening) {
                         MaterialTheme.colorScheme.primary

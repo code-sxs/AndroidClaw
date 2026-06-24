@@ -104,20 +104,20 @@ class VoiceManager private constructor(private val context: Context) {
                 override fun onPartialResult(text: String) {
                     Log.d(TAG, "STT partial: $text")
                     _partialText.value = text
-                    listener?.onPartialText(text)
+                    this@VoiceManager.listener?.onPartialText(text)
                 }
 
                 override fun onFinalResult(text: String) {
                     Log.i(TAG, "STT final: $text")
                     _status.value = VoiceStatus.IDLE
                     _partialText.value = ""
-                    listener?.onFinalText(text)
+                    this@VoiceManager.listener?.onFinalText(text)
                 }
 
                 override fun onError(error: VoiceError) {
                     Log.e(TAG, "STT error: $error")
                     _status.value = VoiceStatus.ERROR
-                    listener?.onError(getErrorMessage(error))
+                    this@VoiceManager.listener?.onError(getErrorMessage(error))
                 }
 
                 override fun onReadyForSpeech() {
@@ -141,7 +141,7 @@ class VoiceManager private constructor(private val context: Context) {
                 override fun onInitialized(success: Boolean, availableLanguages: List<String>) {
                     Log.i(TAG, "TTS initialized: $success, languages: $availableLanguages")
                     if (!success) {
-                        listener?.onError("TTS 初始化失败")
+                        this@VoiceManager.listener?.onError("TTS 初始化失败")
                     }
                 }
 
@@ -149,18 +149,18 @@ class VoiceManager private constructor(private val context: Context) {
                     Log.d(TAG, "TTS speak start")
                     _status.value = VoiceStatus.SPEAKING
                     playSound(SOUND_TTS_START)
-                    listener?.onSpeakStart()
+                    this@VoiceManager.listener?.onSpeakStart()
                 }
 
                 override fun onSpeakDone() {
                     Log.d(TAG, "TTS speak done")
                     _status.value = VoiceStatus.IDLE
-                    listener?.onSpeakDone()
+                    this@VoiceManager.listener?.onSpeakDone()
                 }
 
                 override fun onSpeakError(error: String) {
                     Log.e(TAG, "TTS error: $error")
-                    listener?.onError(error)
+                    this@VoiceManager.listener?.onError(error)
                 }
             }
         }

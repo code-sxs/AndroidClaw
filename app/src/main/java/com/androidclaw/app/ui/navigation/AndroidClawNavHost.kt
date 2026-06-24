@@ -1,12 +1,12 @@
-// AndroidClawNavHost.kt
-// 导航宿主 - 支持页面转场动画
+﻿// AndroidClawNavHost.kt
+// 瀵艰埅瀹夸富 - 鏀寔椤甸潰杞満鍔ㄧ敾
 
 package com.androidclaw.app.ui.navigation
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavHostController
@@ -19,7 +19,7 @@ import com.androidclaw.app.ui.screens.*
 import com.androidclaw.app.mcp.McpSkillManager
 
 /**
- * 导航路由
+ * 瀵艰埅璺敱
  */
 sealed class Screen(val route: String) {
     object Chat : Screen("chat")
@@ -33,7 +33,7 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object Automation : Screen("automation")
     
-    // 新路由
+    // 鏂拌矾鐢?
     object Plan : Screen("plan/{userRequest}") {
         fun createRoute(userRequest: String) = "plan/$userRequest"
     }
@@ -42,19 +42,20 @@ sealed class Screen(val route: String) {
 }
 
 /**
- * 导航宿主
+ * 瀵艰埅瀹夸富
  */
 @Composable
 fun AndroidClawNavHost(
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Chat.route
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = Modifier.fillMaxSize()
     ) {
-        // ==================== 聊天界面 ====================
+        // ==================== 鑱婂ぉ鐣岄潰 ====================
         composable(
             route = Screen.Chat.route,
             enterTransition = {
@@ -99,7 +100,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== 模型管理界面 ====================
+        // ==================== 妯″瀷绠＄悊鐣岄潰 ====================
         composable(
             route = Screen.ModelManagement.route,
             enterTransition = {
@@ -144,7 +145,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== Skill 管理界面 ====================
+        // ==================== Skill 绠＄悊鐣岄潰 ====================
         composable(
             route = Screen.SkillManagement.route,
             enterTransition = {
@@ -170,7 +171,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== Skill 市场界面 ====================
+        // ==================== Skill 甯傚満鐣岄潰 ====================
         composable(
             route = Screen.SkillMarket.route,
             enterTransition = {
@@ -193,7 +194,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== Skill 创建器界面 ====================
+        // ==================== Skill 鍒涘缓鍣ㄧ晫闈?====================
         composable(
             route = Screen.SkillCreator.route,
             enterTransition = {
@@ -219,7 +220,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== 安全报告界面 ====================
+        // ==================== 瀹夊叏鎶ュ憡鐣岄潰 ====================
         composable(
             route = Screen.SecurityReport.route,
             arguments = listOf(
@@ -240,11 +241,10 @@ fun AndroidClawNavHost(
                 )
             }
         ) { backStackEntry ->
-            val skillName = backStackEntry.arguments?.getString("skillName") ?: ""
-            SecurityReportScreen(skillName = skillName)
+            SecurityReportScreen()
         }
         
-        // ==================== 设置界面 ====================
+        // ==================== 璁剧疆鐣岄潰 ====================
         composable(
             route = Screen.Settings.route,
             enterTransition = {
@@ -264,13 +264,13 @@ fun AndroidClawNavHost(
         ) {
             SettingsScreen(
                 navController = navController,
-                aiProviderManager = com.androidclaw.app.ai.AiProviderManager.getInstance(/* TODO: Get context */),
+                aiProviderManager = com.androidclaw.app.ai.AiProviderManager.getInstance(context),
                 mcpSkillManager = McpSkillManager,
-                remoteInferenceManager = com.androidclaw.app.remote.RemoteInferenceManager.getInstance(/* TODO: Get context */)
+                remoteInferenceManager = com.androidclaw.app.remote.RemoteInferenceManager.getInstance(context)
             )
         }
         
-        // ==================== 自动化界面 ====================
+        // ==================== 鑷姩鍖栫晫闈?====================
         composable(
             route = Screen.Automation.route,
             enterTransition = {
@@ -293,7 +293,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== Plan 模式界面 ====================
+        // ==================== Plan 妯″紡鐣岄潰 ====================
         composable(
             route = Screen.Plan.route,
             arguments = listOf(
@@ -317,12 +317,12 @@ fun AndroidClawNavHost(
             val userRequest = backStackEntry.arguments?.getString("userRequest") ?: ""
             PlanScreen(
                 navController = navController,
-                planManager = PlanManager.getInstance(/* TODO: Get context */),
+                planManager = PlanManager.getInstance(context),
                 userRequest = userRequest
             )
         }
         
-        // ==================== MCP Server 管理界面 ====================
+        // ==================== MCP Server 绠＄悊鐣岄潰 ====================
         composable(
             route = Screen.McpServerManagement.route,
             enterTransition = {
@@ -346,7 +346,7 @@ fun AndroidClawNavHost(
             )
         }
         
-        // ==================== AI 提供商设置界面 ====================
+        // ==================== AI 鎻愪緵鍟嗚缃晫闈?====================
         composable(
             route = Screen.AiProviderSettings.route,
             enterTransition = {
@@ -366,14 +366,14 @@ fun AndroidClawNavHost(
         ) {
             AiProviderSettingsScreen(
                 navController = navController,
-                aiProviderManager = com.androidclaw.app.ai.AiProviderManager.getInstance(/* TODO: Get context */)
+                aiProviderManager = com.androidclaw.app.ai.AiProviderManager.getInstance(context)
             )
         }
     }
 }
 
 /**
- * 3D 翻页转场效果
+ * 3D 缈婚〉杞満鏁堟灉
  */
 @Composable
 private fun pageFlipTransition(
@@ -391,13 +391,13 @@ private fun pageFlipTransition(
 }
 
 /**
- * 共享元素转场（需要额外配置）
+ * 鍏变韩鍏冪礌杞満锛堥渶瑕侀澶栭厤缃級
  */
 @Composable
 private fun sharedElementTransition(
     matchedRoute: String,
     content: @Composable () -> Unit
 ) {
-    // 简化实现：直接使用默认转场
+    // 绠€鍖栧疄鐜帮細鐩存帴浣跨敤榛樿杞満
     content()
 }

@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.androidclaw.app.agent.ToolRegistry
 import com.androidclaw.app.skills.ToolDefinition
+import com.androidclaw.app.skills.SkillManager
+import com.androidclaw.app.skills.SkillInfo
 import com.androidclaw.app.ui.components.*
 import com.androidclaw.app.ui.theme.*
 import kotlinx.coroutines.launch
@@ -46,17 +48,17 @@ fun SkillManagementScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val toolRegistry = remember { ToolRegistry.getInstance(context) }
-    val skills = SkillManager.skills
     var selectedSkill by remember { mutableStateOf<SkillInfo?>(null) }
     var searchQuery by remember { mutableStateOf("") }
     var showAddMenu by remember { mutableStateOf(false) }
     
     // 过滤后的技能列表
-    val filteredSkills = remember(searchQuery, skills) {
+    val skillsList by SkillManager.skills.collectAsState()
+    val filteredSkills = remember(searchQuery, skillsList) {
         if (searchQuery.isBlank()) {
-            skills.toList()
+            skillsList
         } else {
-            skills.filter {
+            skillsList.filter {
                 it.displayName.contains(searchQuery, ignoreCase = true) ||
                 it.description.contains(searchQuery, ignoreCase = true)
             }
@@ -142,7 +144,7 @@ fun SkillManagementScreen(
                         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                     ) {
                         Text(
-                            text = "${skills.count { it.isEnabled }} 已启用",
+                            text = "${skillsList.count { it.isEnabled }} 已启用",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -156,7 +158,7 @@ fun SkillManagementScreen(
                 ModernSkillCard(
                     skill = skill,
                     onToggle = { enabled ->
-                        SkillManager.setEnabled(skill.skillName, enabled)
+                        if (enabled) SkillManager.enableSkill(skill.skillName) else SkillManager.disableSkill(skill.skillName)
                     },
                     onClick = { selectedSkill = skill }
                 )
@@ -369,7 +371,7 @@ private fun ModernSkillCard(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            skill.tools.take(3).forEach { tool ->
+                            for (tool in skill.tools.take(3)) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
                                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -588,7 +590,7 @@ private fun ModernSkillDetailDialog(
                         )
                     }
                 } else {
-                    skill.requiredPermissions.forEach { permission ->
+                    for (permission in skill.requiredPermissions) {
                         PermissionItem(permission = permission)
                     }
                 }
@@ -601,7 +603,7 @@ private fun ModernSkillDetailDialog(
                         fontWeight = FontWeight.SemiBold
                     )
                     
-                    skill.tools.forEach { tool ->
+                    for (tool in skill.tools) {
                         ToolItem(tool = tool)
                     }
                 }

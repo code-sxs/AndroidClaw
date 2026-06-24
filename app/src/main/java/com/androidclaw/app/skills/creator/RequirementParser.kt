@@ -200,7 +200,7 @@ $requirement
                     val params = toolObj.optJSONArray("parameters")?.let { pArr ->
                         (0 until pArr.length()).map { j ->
                             val pObj = pArr.getJSONObject(j)
-                            ParameterSpec(
+                            ToolParameterSpec(
                                 name = pObj.getString("name"),
                                 type = pObj.getString("type"),
                                 required = pObj.optBoolean("required", false),
@@ -408,7 +408,7 @@ $requirement
                 name = "execute",
                 description = "执行主要功能",
                 parameters = listOf(
-                    ParameterSpec(
+                    ToolParameterSpec(
                         name = "input",
                         type = "string",
                         required = true,
@@ -435,22 +435,4 @@ data class ParsedRequirement(
     val riskAssessment: String       // 风险评估
 )
 
-/**
- * 工具规格
- */
-data class ToolSpec(
-    val name: String,
-    val description: String,
-    val parameters: List<ParameterSpec>,
-    val returnType: String
-)
 
-/**
- * 参数规格
- */
-data class ParameterSpec(
-    val name: String,
-    val type: String,
-    val required: Boolean,
-    val description: String
-)

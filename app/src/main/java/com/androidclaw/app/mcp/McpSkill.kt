@@ -30,7 +30,8 @@ class McpSkill(
     }
 
     private var mcpClient: McpClient? = null
-    private var tools: List<McpTool> = emptyList()
+    var mcpTools: List<McpTool> = emptyList()
+        private set
     private var isInitialized = false
 
     override val skillName: String
@@ -71,9 +72,9 @@ class McpSkill(
             mcpClient!!.initialize()
 
             // 3. 获取工具列表
-            tools = mcpClient!!.listTools()
+            mcpTools = mcpClient!!.listTools()
 
-            Log.i(TAG, "Loaded ${tools.size} tools from MCP server: $serverName")
+            Log.i(TAG, "Loaded ${mcpTools.size} tools from MCP server: $serverName")
             isInitialized = true
 
         } catch (e: Exception) {
@@ -92,7 +93,7 @@ class McpSkill(
             return emptyList()
         }
 
-        return tools.map { mcpTool ->
+        return mcpTools.map { mcpTool ->
             // 将 MCP 工具的 inputSchema 转换为 ToolParameter 列表
             val parameters = parseInputSchema(mcpTool.inputSchema)
 
@@ -142,7 +143,7 @@ class McpSkill(
         Log.i(TAG, "Releasing MCP Skill: $serverName")
         mcpClient?.close()
         mcpClient = null
-        tools = emptyList()
+        mcpTools = emptyList()
         isInitialized = false
     }
 

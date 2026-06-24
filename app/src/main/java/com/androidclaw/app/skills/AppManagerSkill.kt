@@ -115,7 +115,7 @@ class AppManagerSkill : SkillDefinition {
         val includeSystem = params["include_system"] as? Boolean ?: false
 
         // 获取所有已安装应用
-        val apps = pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
+        val apps = pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0L))
 
         val filteredApps = apps
             .filter { app ->
@@ -179,10 +179,10 @@ class AppManagerSkill : SkillDefinition {
 
         val packageInfo: PackageInfo = try {
             pm.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(
-                PackageManager.GET_PERMISSIONS or
+                (PackageManager.GET_PERMISSIONS or
                         PackageManager.GET_ACTIVITIES or
                         PackageManager.GET_SERVICES or
-                        PackageManager.GET_RECEIVERS
+                        PackageManager.GET_RECEIVERS).toLong()
             ))
         } catch (e: PackageManager.NameNotFoundException) {
             return ToolResult.Error("未找到应用: $packageName")

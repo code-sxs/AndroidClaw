@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutomationScreen(
-    onNavigateBack: () -> Unit,
+    onNavigateBack: (() -> Unit)? = null,
     viewModel: AutomationViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -46,20 +46,22 @@ fun AutomationScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("跨应用自动化") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, "返回")
+            if (onNavigateBack != null) {
+                val onBack = onNavigateBack
+                TopAppBar(
+                    title = { Text("跨应用自动化") },
+                    navigationIcon = {
+                        IconButton(onClick = { onBack() }) {
+                            Icon(Icons.Default.ArrowBack, "返回")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.showHelp() }) {
+                            Icon(Icons.Default.Help, "帮助")
+                        }
                     }
-                },
-                actions = {
-                    // 帮助按钮
-                    IconButton(onClick = { viewModel.showHelp() }) {
-                        Icon(Icons.Default.Help, "帮助")
-                    }
-                }
-            )
+                )
+            }
         },
         floatingActionButton = {
             if (uiState.isServiceRunning && !uiState.isExecuting) {

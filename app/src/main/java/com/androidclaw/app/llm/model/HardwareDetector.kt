@@ -52,11 +52,17 @@ object HardwareDetector {
      */
     private fun detectGPU(): Boolean {
         return try {
+            // 模拟器没有真实 GPU
+            if (isEmulator()) {
+                Log.d(TAG, "Running on emulator, no real GPU")
+                return false
+            }
             // 尝试获取 GPU 渲染器信息
             val renderer = getGPURenderer()
             val hasGPU = renderer.isNotEmpty() &&
                     !renderer.contains("llvmpipe") &&  // 排除软件渲染
-                    !renderer.contains("swiftShader")
+                    !renderer.contains("swiftShader") &&
+                    !renderer.contains("emulator")
 
             Log.d(TAG, "GPU detected: $hasGPU (renderer: $renderer)")
             hasGPU
@@ -71,6 +77,11 @@ object HardwareDetector {
      */
     private fun getGPURenderer(): String {
         return try {
+            // 先检查是否是模拟器
+            if (isEmulator()) {
+                Log.d(TAG, "Running on emulator, skipping GPU detection")
+                return "emulator"
+            }
             val renderer = android.opengl.GLES20.glGetString(GLES20.GL_RENDERER)
             renderer ?: ""
         } catch (e: Exception) {
@@ -80,11 +91,32 @@ object HardwareDetector {
     }
 
     /**
+     * 检查是否在模拟器上运行
+     */
+    private fun isEmulator(): Boolean {
+        return (Build.FINGERPRINT.startsWith("generic") ||
+                Build.FINGERPRINT.startsWith("unknown") ||
+                Build.MODEL.contains("google_sdk") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                "google_sdk" == Build.PRODUCT ||
+                Build.HARDWARE.contains("goldfish") ||
+                Build.HARDWARE.contains("ranchu"))
+    }
+
+    /**
      * 检测 NPU (神经网络加速芯片)
      * 检查是否有神经网路 API 支持
      */
     private fun detectNPU(): Boolean {
         return try {
+            // 模拟器没有 NPU
+            if (isEmulator()) {
+                Log.d(TAG, "Running on emulator, no NPU")
+                return false
+            }
             // 检查是否有 NNAPI (Android Neural Networks API)
             val hasNNAPI = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
 

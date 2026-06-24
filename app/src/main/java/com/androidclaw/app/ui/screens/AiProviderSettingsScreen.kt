@@ -42,8 +42,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiProviderSettingsScreen(
-    navController: NavController,
-    aiProviderManager: AiProviderManager
+    navController: NavController?,
+    aiProviderManager: AiProviderManager,
+    isTabMode: Boolean = false
 ) {
     var selectedProvider by remember { mutableStateOf(AiProviderType.LOCAL) }
     var apiKey by remember { mutableStateOf("") }
@@ -59,12 +60,14 @@ fun AiProviderSettingsScreen(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            GlassAppBar(
-                title = "AI Provider",
-                subtitle = "Configure AI model source",
-                showBackButton = true,
-                onBackClick = { navController.popBackStack() }
-            )
+            if (!isTabMode) {
+                GlassAppBar(
+                    title = "AI Provider",
+                    subtitle = "Configure AI model source",
+                    showBackButton = true,
+                    onBackClick = { navController?.popBackStack() }
+                )
+            }
         }
     ) { paddingValues ->
         LazyColumn(
@@ -295,7 +298,7 @@ fun AiProviderSettingsScreen(
             item {
                 GradientButton(
                     onClick = {
-                        saveProvider(coroutineScope, aiProviderManager, selectedProvider, apiKey, baseUrl, model, setIsSaving = { isSaving = it }) { navController.popBackStack() }
+                        saveProvider(coroutineScope, aiProviderManager, selectedProvider, apiKey, baseUrl, model, setIsSaving = { isSaving = it }) { navController?.popBackStack() }
                     },
                     enabled = !isSaving && (selectedProvider == AiProviderType.LOCAL || apiKey.isNotBlank()),
                     modifier = Modifier.fillMaxWidth(),
